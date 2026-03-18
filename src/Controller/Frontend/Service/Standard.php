@@ -361,13 +361,10 @@ class Standard
 			$direction = ( $sortkey[0] === '-' ? '-' : '+' );
 			$sortkey = ltrim( $sortkey, '+-' );
 
-			switch( $sortkey )
-			{
-				case 'type':
-					$this->addExpression( $this->filter->sort( $direction, 'service.type' ) ); break;
-				default:
-					$this->addExpression( $this->filter->sort( $direction, $sortkey ) );
-			}
+			match ($sortkey) {
+                'type' => $this->addExpression( $this->filter->sort( $direction, 'service.type' ) ),
+                default => $this->addExpression( $this->filter->sort( $direction, $sortkey ) ),
+            };
 		}
 
 		return $this;

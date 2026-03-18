@@ -440,17 +440,11 @@ class Standard
 			$direction = ( $sortkey[0] === '-' ? '-' : '+' );
 			$sortkey = ltrim( $sortkey, '+-' );
 
-			switch( $sortkey )
-			{
-				case 'ctime':
-					$this->addExpression( $this->filter->sort( $direction, 'review.ctime' ) );
-					break;
-				case 'rating':
-					$this->addExpression( $this->filter->sort( $direction, 'review.rating' ) );
-					break;
-				default:
-					$this->addExpression( $this->filter->sort( $direction, $sortkey ) );
-			}
+			match ($sortkey) {
+                'ctime' => $this->addExpression( $this->filter->sort( $direction, 'review.ctime' ) ),
+                'rating' => $this->addExpression( $this->filter->sort( $direction, 'review.rating' ) ),
+                default => $this->addExpression( $this->filter->sort( $direction, $sortkey ) ),
+            };
 		}
 
 		return $this;

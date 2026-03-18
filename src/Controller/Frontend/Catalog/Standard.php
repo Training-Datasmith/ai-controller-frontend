@@ -330,7 +330,7 @@ class Standard
 	 */
 	public function root( ?string $id = null ) : Iface
 	{
-		$this->root = ( $id ? $id : null );
+		$this->root = ( $id ?: null );
 		return $this;
 	}
 

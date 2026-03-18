@@ -20,9 +20,6 @@ namespace Aimeos\Controller\Frontend\Basket;
  */
 class Exception extends \Aimeos\Controller\Frontend\Exception
 {
-	private array $errors;
-
-
 	/**
 	 * Initializes the instance of the exception
 	 *
@@ -31,11 +28,9 @@ class Exception extends \Aimeos\Controller\Frontend\Exception
 	 * @param \Exception|null $previous Previously thrown exception
 	 * @param array $errors List of error codes for error handling
 	 */
-	public function __construct( string $message = '', int $code = 0, ?\Exception $previous = null, array $errors = [] )
+	public function __construct( string $message = '', int $code = 0, ?\Exception $previous = null, private array $errors = [] )
 	{
 		parent::__construct( $message, $code, $previous );
-
-		$this->errors = $errors;
 	}
 
 

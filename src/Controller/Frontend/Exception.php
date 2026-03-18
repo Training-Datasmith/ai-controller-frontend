@@ -21,9 +21,6 @@ namespace Aimeos\Controller\Frontend;
 class Exception
 	extends \Exception
 {
-	private array $list;
-
-
 	/**
 	 * Initializes the exception.
 	 *
@@ -32,11 +29,9 @@ class Exception
 	 * @param \Exception $previous The previous exception used for the exception chaining.
 	 * @param array $list The associative list of errors and their messages when several errors occured
 	 */
-	public function __construct( string $msg = '', int $code = 0, ?\Exception $previous = null, array $list = [] )
+	public function __construct( string $msg = '', int $code = 0, ?\Exception $previous = null, private array $list = [] )
 	{
 		parent::__construct( $msg, $code, $previous );
-
-		$this->list = $list;
 	}
 
 

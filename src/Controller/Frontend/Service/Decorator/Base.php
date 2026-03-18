@@ -27,20 +27,15 @@ abstract class Base
 	use \Aimeos\Controller\Frontend\Common\Decorator\Traits;
 
 
-	private \Aimeos\Controller\Frontend\Service\Iface $controller;
-
-
 	/**
 	 * Initializes the controller decorator.
 	 *
 	 * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
 	 * @param \Aimeos\MShop\ContextIface $context Context object with required objects
 	 */
-	public function __construct( \Aimeos\Controller\Frontend\Iface $controller, \Aimeos\MShop\ContextIface $context )
+	public function __construct( private \Aimeos\Controller\Frontend\Service\Iface $controller, \Aimeos\MShop\ContextIface $context )
 	{
 		parent::__construct( $context );
-
-		$this->controller = $controller;
 	}
 
 
@@ -54,7 +49,7 @@ abstract class Base
 	 */
 	public function __call( string $name, array $param )
 	{
-		return @call_user_func_array( array( $this->controller, $name ), $param );
+		return @call_user_func_array( [ $this->controller, $name ], $param );
 	}
 
 

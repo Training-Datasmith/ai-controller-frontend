@@ -19,8 +19,8 @@ namespace Aimeos\Controller;
  */
 class Frontend
 {
-	private static $cache = true;
-	private static $objects = [];
+	private static bool $cache = true;
+	private static array $objects = [];
 
 
 	/**
@@ -28,9 +28,9 @@ class Frontend
 	 *
 	 * @param bool $value True to enable caching, false to disable it.
 	 */
-	public static function cache( bool $value )
+	public static function cache( bool $value ): void
 	{
-		self::$cache = (boolean) $value;
+		self::$cache = $value;
 		self::$objects = [];
 	}
 
@@ -82,7 +82,7 @@ class Frontend
 	 * @param string $classname Full name of the class for which the object should be returned
 	 * @param \Aimeos\Controller\Frontend\Iface|null $object Frontend controller object for the given name or null to clear
 	 */
-	public static function inject( string $classname, ?\Aimeos\Controller\Frontend\Iface $object = null )
+	public static function inject( string $classname, ?\Aimeos\Controller\Frontend\Iface $object = null ): void
 	{
 		self::$objects['\\' . ltrim( $classname, '\\' )] = $object;
 	}

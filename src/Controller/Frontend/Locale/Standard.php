@@ -259,14 +259,10 @@ class Standard
 			$direction = ( $sortkey[0] === '-' ? '-' : '+' );
 			$sortkey = ltrim( $sortkey, '+-' );
 
-			switch( $sortkey )
-			{
-				case 'position':
-					$this->addExpression( $this->filter->sort( $direction, 'locale.position' ) );
-					break;
-				default:
-				$this->addExpression( $this->filter->sort( $direction, $sortkey ) );
-			}
+			match ($sortkey) {
+                'position' => $this->addExpression( $this->filter->sort( $direction, 'locale.position' ) ),
+                default => $this->addExpression( $this->filter->sort( $direction, $sortkey ) ),
+            };
 		}
 
 		return $this;

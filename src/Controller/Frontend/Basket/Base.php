@@ -137,9 +137,9 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements Iface
 		if( $localeStr !== null && $localeStr !== $localeKey )
 		{
 			$locParts = explode( '|', $localeStr );
-			$locSite = ( isset( $locParts[0] ) ? $locParts[0] : '' );
-			$locLanguage = ( isset( $locParts[1] ) ? $locParts[1] : '' );
-			$locCurrency = ( isset( $locParts[2] ) ? $locParts[2] : '' );
+			$locSite = ( $locParts[0] ?? '' );
+			$locLanguage = ( $locParts[1] ?? '' );
+			$locCurrency = ( $locParts[2] ?? '' );
 
 			$localeManager = \Aimeos\MShop::create( $context, 'locale' );
 			$locale = $localeManager->bootstrap( $locSite, $locLanguage, $locCurrency, false );
@@ -328,7 +328,7 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements Iface
 					$newBasket->addService( $service, $attributes, $position );
 					$basket->deleteService( $type );
 				}
-				catch( \Exception $e ) { ; } // Don't notify the user as appropriate services can be added automatically
+				catch( \Exception ) { ; } // Don't notify the user as appropriate services can be added automatically
 			}
 		}
 
@@ -423,19 +423,19 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements Iface
 		{
 			if( is_scalar( $item->getValue() ) )
 			{
-				$tmp = array(
+				$tmp = [
 					$search->compare( '==', 'attribute.domain', 'product' ),
 					$search->compare( '==', 'attribute.code', $item->getValue() ),
 					$search->compare( '==', 'attribute.type', $item->getCode() ),
 					$search->compare( '>', 'attribute.status', 0 ),
 					$search->getConditions(),
-				);
+				];
 				$expr[] = $search->and( $tmp );
 			}
 		}
 
 		$search->setConditions( $search->or( $expr ) );
-		return $attributeManager->search( $search, array( 'price' ) );
+		return $attributeManager->search( $search, [ 'price' ] );
 	}
 
 

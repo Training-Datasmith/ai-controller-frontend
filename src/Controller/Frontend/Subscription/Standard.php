@@ -209,7 +209,7 @@ class Standard
 			'subscription.id' => $id
 		] );
 
-		return $this->manager->search( $filter, $this->domains )->first( function() use ( $id, $user ) {
+		return $this->manager->search( $filter, $this->domains )->first( function() use ( $id, $user ): void {
 			$msg = 'Invalid subscription ID "%1$s" for customer ID "%2$s"';
 			throw new \Aimeos\Controller\Frontend\Subscription\Exception( sprintf( $msg, $id, $user ) );
 		} );
@@ -312,13 +312,10 @@ class Standard
 			$direction = ( $sortkey[0] === '-' ? '-' : '+' );
 			$sortkey = ltrim( $sortkey, '+-' );
 
-			switch( $sortkey )
-			{
-				case 'interval':
-					$this->addExpression( $this->filter->sort( $direction, 'subscription.interval' ) ); break;
-				default:
-					$this->addExpression( $this->filter->sort( $direction, $sortkey ) );
-			}
+			match ($sortkey) {
+                'interval' => $this->addExpression( $this->filter->sort( $direction, 'subscription.interval' ) ),
+                default => $this->addExpression( $this->filter->sort( $direction, $sortkey ) ),
+            };
 		}
 
 		return $this;
