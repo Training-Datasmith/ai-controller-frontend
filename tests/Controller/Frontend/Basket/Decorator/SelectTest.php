@@ -1,201 +1,186 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  */
 
-
 namespace Aimeos\Controller\Frontend\Basket\Decorator;
-
 
 class SelectTest extends \PHPUnit\Framework\TestCase
 {
-	private $object;
-	private $context;
-	private $testItem;
+    private $object;
+    private $context;
+    private $testItem;
 
+    protected function setUp(): void
+    {
+        $this->context = \TestHelper::context();
 
-	protected function setUp() : void
-	{
-		$this->context = \TestHelper::context();
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $this->testItem = $manager->find('U:TESTP', ['attribute', 'media', 'price', 'product', 'text']);
 
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$this->testItem = $manager->find( 'U:TESTP', ['attribute', 'media', 'price', 'product', 'text'] );
+        $object = new \Aimeos\Controller\Frontend\Basket\Standard($this->context);
+        $this->object = new \Aimeos\Controller\Frontend\Basket\Decorator\Select($object, $this->context);
+    }
 
-		$object = new \Aimeos\Controller\Frontend\Basket\Standard( $this->context );
-		$this->object = new \Aimeos\Controller\Frontend\Basket\Decorator\Select( $object, $this->context );
-	}
+    protected function tearDown(): void
+    {
+        $this->object->clear();
+        $this->context->session()->set('aimeos', []);
 
+        unset($this->object, $this->testItem, $this->context);
+    }
 
-	protected function tearDown() : void
-	{
-		$this->object->clear();
-		$this->context->session()->set( 'aimeos', [] );
+    public function testAddDeleteProduct()
+    {
+        $basket = $this->object->get();
 
-		unset( $this->object, $this->testItem, $this->context );
-	}
+        $this->assertSame($this->object, $this->object->addProduct($this->testItem, 2));
+        $this->assertEquals(1, count($basket->getProducts()));
+        $this->assertEquals(2, $basket->getProduct(0)->getQuantity());
+        $this->assertEquals('U:TESTPSUB01', $basket->getProduct(0)->getProductCode());
+    }
 
+    public function testAddProductNoSelection()
+    {
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $item = $manager->find('CNC', ['attribute', 'media', 'price', 'product', 'text']);
 
-	public function testAddDeleteProduct()
-	{
-		$basket = $this->object->get();
+        $this->assertSame($this->object, $this->object->addProduct($item));
+        $this->assertEquals(1, count($this->object->get()->getProducts()));
+        $this->assertEquals('CNC', $this->object->get()->getProduct(0)->getProductCode());
+        $this->assertEquals(0, count($this->object->get()->getProduct(0)->getProducts()));
+    }
 
-		$this->assertSame( $this->object, $this->object->addProduct( $this->testItem, 2 ) );
-		$this->assertEquals( 1, count( $basket->getProducts() ) );
-		$this->assertEquals( 2, $basket->getProduct( 0 )->getQuantity() );
-		$this->assertEquals( 'U:TESTPSUB01', $basket->getProduct( 0 )->getProductCode() );
-	}
+    public function testAddProductVariant()
+    {
+        $manager = \Aimeos\MShop::create(\TestHelper::context(), 'attribute');
 
+        $search = $manager->filter();
+        $search->setConditions($search->compare('==', 'attribute.code', [ 'xs', 'white' ]));
 
-	public function testAddProductNoSelection()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$item = $manager->find( 'CNC', ['attribute', 'media', 'price', 'product', 'text'] );
+        $attrIds = $manager->search($search)->keys();
 
-		$this->assertSame( $this->object, $this->object->addProduct( $item ) );
-		$this->assertEquals( 1, count( $this->object->get()->getProducts() ) );
-		$this->assertEquals( 'CNC', $this->object->get()->getProduct( 0 )->getProductCode() );
-		$this->assertEquals( 0, count( $this->object->get()->getProduct( 0 )->getProducts() ) );
-	}
+        if ($attrIds->isEmpty()) {
+            throw new \RuntimeException('Attributes not found');
+        }
 
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $item = $manager->find('CNC', ['attribute', 'media', 'price', 'product', 'text']);
 
-	public function testAddProductVariant()
-	{
-		$manager = \Aimeos\MShop::create( \TestHelper::context(), 'attribute' );
+        $result = $this->object->addProduct($item, 1, $attrIds->toArray(), [], [], 'default');
 
-		$search = $manager->filter();
-		$search->setConditions( $search->compare( '==', 'attribute.code', array( 'xs', 'white' ) ) );
+        $this->assertSame($this->object, $result);
+        $this->assertEquals(1, count($this->object->get()->getProducts()));
+        $this->assertEquals('CNC', $this->object->get()->getProduct(0)->getProductCode());
+        $this->assertEquals('default', $this->object->get()->getProduct(0)->getStockType());
+    }
 
-		$attrIds = $manager->search( $search )->keys();
+    public function testAddProductVariantIncomplete()
+    {
+        $id = \Aimeos\MShop::create($this->context, 'attribute')->find('30', [], 'product', 'length')->getId();
 
-		if( $attrIds->isEmpty() ) {
-			throw new \RuntimeException( 'Attributes not found' );
-		}
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $item = $manager->find('U:TEST', ['attribute', 'media', 'price', 'product', 'text']);
 
+        $this->assertSame($this->object, $this->object->addProduct($item, 1, [$id]));
+        $this->assertEquals(1, count($this->object->get()->getProducts()));
+        $this->assertEquals('U:TESTSUB02', $this->object->get()->getProduct(0)->getProductCode());
+        $this->assertEquals(2, count($this->object->get()->getProduct(0)->getAttributeItems()));
+    }
 
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$item = $manager->find( 'CNC', ['attribute', 'media', 'price', 'product', 'text'] );
+    public function testAddProductVariantNonUnique()
+    {
+        $id = \Aimeos\MShop::create($this->context, 'attribute')->find('30', [], 'product', 'width')->getId();
 
-		$result = $this->object->addProduct( $item, 1, $attrIds->toArray(), [], [], 'default' );
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $item = $manager->find('U:TEST', ['attribute', 'media', 'price', 'product', 'text']);
 
-		$this->assertSame( $this->object, $result );
-		$this->assertEquals( 1, count( $this->object->get()->getProducts() ) );
-		$this->assertEquals( 'CNC', $this->object->get()->getProduct( 0 )->getProductCode() );
-		$this->assertEquals( 'default', $this->object->get()->getProduct( 0 )->getStockType() );
-	}
+        $this->expectException('\\Aimeos\\Controller\\Frontend\\Basket\\Exception');
+        $this->object->addProduct($item, 1, [$id]);
+    }
 
+    public function testAddProductVariantNotRequired()
+    {
+        $this->context->config()->set('controller/frontend/basket/require-variant', false);
+        $id = \Aimeos\MShop::create($this->context, 'attribute')->find('xs', [], 'product', 'size')->getId();
 
-	public function testAddProductVariantIncomplete()
-	{
-		$id = \Aimeos\MShop::create( $this->context, 'attribute' )->find( '30', [], 'product', 'length' )->getId();
+        $this->object->addProduct($this->testItem, 1, [$id]);
 
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$item = $manager->find( 'U:TEST', ['attribute', 'media', 'price', 'product', 'text'] );
+        $this->assertEquals(1, count($this->object->get()->getProducts()));
+        $this->assertEquals('U:TESTP', $this->object->get()->getProduct(0)->getProductCode());
+    }
 
-		$this->assertSame( $this->object, $this->object->addProduct( $item, 1, [$id] ) );
-		$this->assertEquals( 1, count( $this->object->get()->getProducts() ) );
-		$this->assertEquals( 'U:TESTSUB02', $this->object->get()->getProduct( 0 )->getProductCode() );
-		$this->assertEquals( 2, count( $this->object->get()->getProduct( 0 )->getAttributeItems() ) );
-	}
+    public function testAddProductEmptySelectionException()
+    {
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $item = $manager->find('U:noSel', ['attribute', 'media', 'price', 'product', 'text']);
 
+        $this->expectException('\\Aimeos\\Controller\\Frontend\\Basket\\Exception');
+        $this->object->addProduct($item);
+    }
 
-	public function testAddProductVariantNonUnique()
-	{
-		$id = \Aimeos\MShop::create( $this->context, 'attribute' )->find( '30', [], 'product', 'width' )->getId();
+    public function testAddProductSelectionWithPricelessItem()
+    {
+        $this->assertSame($this->object, $this->object->addProduct($this->testItem));
+        $this->assertEquals('U:TESTPSUB01', $this->object->get()->getProduct(0)->getProductCode());
+    }
 
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$item = $manager->find( 'U:TEST', ['attribute', 'media', 'price', 'product', 'text'] );
+    public function testAddProductConfigAttribute()
+    {
+        $id = \Aimeos\MShop::create($this->context, 'attribute')->find('xs', [], 'product', 'size')->getId();
 
-		$this->expectException( '\\Aimeos\\Controller\\Frontend\\Basket\\Exception' );
-		$this->object->addProduct( $item, 1, [$id] );
-	}
+        $result = $this->object->addProduct($this->testItem, 1, [], [$id => 1]);
+        $basket = $this->object->get();
 
+        $this->assertSame($this->object, $result);
+        $this->assertEquals(1, count($basket->getProducts()));
+        $this->assertEquals('U:TESTPSUB01', $basket->getProduct(0)->getProductCode());
+        $this->assertEquals('xs', $basket->getProduct(0)->getAttribute('size', 'config'));
+    }
 
-	public function testAddProductVariantNotRequired()
-	{
-		$this->context->config()->set( 'controller/frontend/basket/require-variant', false );
-		$id = \Aimeos\MShop::create( $this->context, 'attribute' )->find( 'xs', [], 'product', 'size' )->getId();
+    public function testAddProductHiddenAttribute()
+    {
+        $result = $this->object->addProduct($this->testItem);
 
-		$this->object->addProduct( $this->testItem, 1, [$id] );
+        $basket = $this->object->get();
+        $this->assertEquals(1, count($basket->getProducts()));
 
-		$this->assertEquals( 1, count( $this->object->get()->getProducts() ) );
-		$this->assertEquals( 'U:TESTP', $this->object->get()->getProduct( 0 )->getProductCode() );
-	}
+        $product = $basket->getProduct(0);
+        $this->assertEquals('U:TESTPSUB01', $product->getProductCode());
 
+        $attributes = $product->getAttributeItems();
+        $this->assertEquals(1, count($attributes));
 
-	public function testAddProductEmptySelectionException()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$item = $manager->find( 'U:noSel', ['attribute', 'media', 'price', 'product', 'text'] );
+        $this->assertSame($this->object, $result);
+        $this->assertEquals('hidden', $attributes->first()->getType());
+        $this->assertEquals('29', $product->getAttribute('width', 'hidden'));
+    }
 
-		$this->expectException( '\\Aimeos\\Controller\\Frontend\\Basket\\Exception' );
-		$this->object->addProduct( $item );
-	}
+    public function testUpdateProduct()
+    {
+        $manager = \Aimeos\MShop::create($this->context, 'product');
+        $item = $manager->find('CNC', ['attribute', 'media', 'price', 'product', 'text']);
+        $this->object->addProduct($item);
 
+        $this->assertSame($this->object, $this->object->updateProduct(0, 2));
+        $this->assertEquals(1, count($this->object->get()->getProducts()));
+        $this->assertEquals(2, $this->object->get()->getProduct(0)->getQuantity());
+        $this->assertEquals('CNC', $this->object->get()->getProduct(0)->getProductCode());
+        $this->assertEquals('600.00', $this->object->get()->getProduct(0)->getPrice()->getValue());
+    }
 
-	public function testAddProductSelectionWithPricelessItem()
-	{
-		$this->assertSame( $this->object, $this->object->addProduct( $this->testItem ) );
-		$this->assertEquals( 'U:TESTPSUB01', $this->object->get()->getProduct( 0 )->getProductCode() );
-	}
+    public function testUpdateProductSelect()
+    {
+        $this->object->addProduct($this->testItem, 1);
 
-
-	public function testAddProductConfigAttribute()
-	{
-		$id = \Aimeos\MShop::create( $this->context, 'attribute' )->find( 'xs', [], 'product', 'size' )->getId();
-
-		$result = $this->object->addProduct( $this->testItem, 1, [], [$id => 1] );
-		$basket = $this->object->get();
-
-		$this->assertSame( $this->object, $result );
-		$this->assertEquals( 1, count( $basket->getProducts() ) );
-		$this->assertEquals( 'U:TESTPSUB01', $basket->getProduct( 0 )->getProductCode() );
-		$this->assertEquals( 'xs', $basket->getProduct( 0 )->getAttribute( 'size', 'config' ) );
-	}
-
-
-	public function testAddProductHiddenAttribute()
-	{
-		$result = $this->object->addProduct( $this->testItem );
-
-		$basket = $this->object->get();
-		$this->assertEquals( 1, count( $basket->getProducts() ) );
-
-		$product = $basket->getProduct( 0 );
-		$this->assertEquals( 'U:TESTPSUB01', $product->getProductCode() );
-
-		$attributes = $product->getAttributeItems();
-		$this->assertEquals( 1, count( $attributes ) );
-
-		$this->assertSame( $this->object, $result );
-		$this->assertEquals( 'hidden', $attributes->first()->getType() );
-		$this->assertEquals( '29', $product->getAttribute( 'width', 'hidden' ) );
-	}
-
-
-	public function testUpdateProduct()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'product' );
-		$item = $manager->find( 'CNC', ['attribute', 'media', 'price', 'product', 'text'] );
-		$this->object->addProduct( $item );
-
-		$this->assertSame( $this->object, $this->object->updateProduct( 0, 2 ) );
-		$this->assertEquals( 1, count( $this->object->get()->getProducts() ) );
-		$this->assertEquals( 2, $this->object->get()->getProduct( 0 )->getQuantity() );
-		$this->assertEquals( 'CNC', $this->object->get()->getProduct( 0 )->getProductCode() );
-		$this->assertEquals( '600.00', $this->object->get()->getProduct( 0 )->getPrice()->getValue() );
-	}
-
-
-	public function testUpdateProductSelect()
-	{
-		$this->object->addProduct( $this->testItem, 1 );
-
-		$this->assertSame( $this->object, $this->object->updateProduct( 0, 2 ) );
-		$this->assertEquals( 1, count( $this->object->get()->getProducts() ) );
-		$this->assertEquals( 2, $this->object->get()->getProduct( 0 )->getQuantity() );
-		$this->assertEquals( 'U:TESTPSUB01', $this->object->get()->getProduct( 0 )->getProductCode() );
-		$this->assertEquals( '18.00', $this->object->get()->getProduct( 0 )->getPrice()->getValue() );
-	}
+        $this->assertSame($this->object, $this->object->updateProduct(0, 2));
+        $this->assertEquals(1, count($this->object->get()->getProducts()));
+        $this->assertEquals(2, $this->object->get()->getProduct(0)->getQuantity());
+        $this->assertEquals('U:TESTPSUB01', $this->object->get()->getProduct(0)->getProductCode());
+        $this->assertEquals('18.00', $this->object->get()->getProduct(0)->getPrice()->getValue());
+    }
 }

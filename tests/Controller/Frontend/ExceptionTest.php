@@ -1,7 +1,8 @@
 <?php
 
-namespace Aimeos\Controller\Frontend;
+declare(strict_types=1);
 
+namespace Aimeos\Controller\Frontend;
 
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
@@ -10,34 +11,29 @@ namespace Aimeos\Controller\Frontend;
  */
 class ExceptionTest extends \PHPUnit\Framework\TestCase
 {
-	private $object;
+    private $object;
 
+    protected function setUp(): void
+    {
+        $this->object = new \Aimeos\Controller\Frontend\Exception('msg', 1, null, [ 'key' => 'value' ]);
+    }
 
-	protected function setUp() : void
-	{
-		$this->object = new \Aimeos\Controller\Frontend\Exception( 'msg', 1, null, array( 'key' => 'value' ) );
-	}
+    protected function tearDown(): void
+    {
+    }
 
+    public function testGetMessage()
+    {
+        $this->assertEquals('msg', $this->object->getMessage());
+    }
 
-	protected function tearDown() : void
-	{
-	}
+    public function testGetCode()
+    {
+        $this->assertEquals(1, $this->object->getCode());
+    }
 
-
-	public function testGetMessage()
-	{
-		$this->assertEquals( 'msg', $this->object->getMessage() );
-	}
-
-
-	public function testGetCode()
-	{
-		$this->assertEquals( 1, $this->object->getCode() );
-	}
-
-
-	public function testGetErrorList()
-	{
-		$this->assertEquals( array( 'key' => 'value' ), $this->object->getErrorList() );
-	}
+    public function testGetErrorList()
+    {
+        $this->assertEquals([ 'key' => 'value' ], $this->object->getErrorList());
+    }
 }

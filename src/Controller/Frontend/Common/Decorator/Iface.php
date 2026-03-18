@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -8,9 +10,7 @@
  * @subpackage Frontend
  */
 
-
 namespace Aimeos\Controller\Frontend\Common\Decorator;
-
 
 /**
  * Decorator interface for controller.
@@ -20,11 +20,11 @@ namespace Aimeos\Controller\Frontend\Common\Decorator;
  */
 interface Iface extends \Aimeos\Controller\Frontend\Iface
 {
-	/**
-	 * Initializes a new controller decorator object.
-	 *
-	 * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
-	 * @param \Aimeos\MShop\ContextIface $context Context object with required objects
-	 */
-	public function __construct( \Aimeos\Controller\Frontend\Iface $controller, \Aimeos\MShop\ContextIface $context );
+    /**
+     * Initializes a new controller decorator object.
+     *
+     * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
+     * @param \Aimeos\MShop\ContextIface $context Context object with required objects
+     */
+    public function __construct(\Aimeos\Controller\Frontend\Iface $controller, \Aimeos\MShop\ContextIface $context);
 }

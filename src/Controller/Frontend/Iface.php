@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -8,9 +10,7 @@
  * @subpackage Frontend
  */
 
-
 namespace Aimeos\Controller\Frontend;
-
 
 /**
  * Common interface for controller
@@ -20,33 +20,33 @@ namespace Aimeos\Controller\Frontend;
  */
 interface Iface
 {
-	/**
-	 * Adds the given compare, combine or sort expression to the list of expressions
-	 *
-	 * @param \Aimeos\Base\Criteria\Expression\Iface|null $expr Compare, combine or sort expression
-	 * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
-	 */
-	public function addExpression( ?\Aimeos\Base\Criteria\Expression\Iface $expr = null ) : Iface;
+    /**
+     * Adds the given compare, combine or sort expression to the list of expressions
+     *
+     * @param \Aimeos\Base\Criteria\Expression\Iface|null $expr Compare, combine or sort expression
+     * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
+     */
+    public function addExpression(?\Aimeos\Base\Criteria\Expression\Iface $expr = null): Iface;
 
-	/**
-	 * Returns the compare and combine expressions added by addExpression()
-	 *
-	 * @return array List of compare and combine expressions
-	 */
-	public function getConditions() : array;
+    /**
+     * Returns the compare and combine expressions added by addExpression()
+     *
+     * @return array List of compare and combine expressions
+     */
+    public function getConditions(): array;
 
-	/**
-	 * Returns the compare and combine expressions added by addExpression()
-	 *
-	 * @return array List of sort expressions
-	 */
-	public function getSortations() : array;
+    /**
+     * Returns the compare and combine expressions added by addExpression()
+     *
+     * @return array List of sort expressions
+     */
+    public function getSortations(): array;
 
-	/**
-	 * Injects the reference of the outmost object
-	 *
-	 * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
-	 * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
-	 */
-	public function setObject( Iface $object ) : Iface;
+    /**
+     * Injects the reference of the outmost object
+     *
+     * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
+     * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
+     */
+    public function setObject(Iface $object): Iface;
 }

@@ -1,11 +1,13 @@
 <?php
 
-return array(
-	'frontend' => array(
-		'basket' => array(
-			'decorators' => array(
-				'local' => array( 'Category', 'Bundle', 'Select' ),
-			),
-		),
-	),
-);
+declare(strict_types=1);
+
+return [
+    'frontend' => [
+        'basket' => [
+            'decorators' => [
+                'local' => [ 'Category', 'Bundle', 'Select' ],
+            ],
+        ],
+    ],
+];

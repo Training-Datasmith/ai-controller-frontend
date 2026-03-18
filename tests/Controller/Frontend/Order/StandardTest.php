@@ -1,125 +1,114 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
  * @copyright Aimeos (aimeos.org), 2015-2026
  */
 
-
 namespace Aimeos\Controller\Frontend\Order;
-
 
 class StandardTest extends \PHPUnit\Framework\TestCase
 {
-	private $object;
-	private $context;
+    private $object;
+    private $context;
 
+    protected function setUp(): void
+    {
+        \Aimeos\MShop::cache(true);
 
-	protected function setUp() : void
-	{
-		\Aimeos\MShop::cache( true );
+        $this->context = \TestHelper::context();
+        $this->object = new \Aimeos\Controller\Frontend\Order\Standard($this->context);
+    }
 
-		$this->context = \TestHelper::context();
-		$this->object = new \Aimeos\Controller\Frontend\Order\Standard( $this->context );
-	}
+    protected function tearDown(): void
+    {
+        \Aimeos\MShop::cache(false);
+        unset($this->object, $this->context);
+    }
 
+    public function testCompare()
+    {
+        $this->assertSame($this->object, $this->object->compare('==', 'order.type', 'test'));
+    }
 
-	protected function tearDown() : void
-	{
-		\Aimeos\MShop::cache( false );
-		unset( $this->object, $this->context );
-	}
+    public function testGet()
+    {
+        $manager = \Aimeos\MShop::create($this->context, 'order');
+        $items = $manager->search($manager->filter()->slice(0, 1));
 
+        if (($item = $items->first()) === null) {
+            throw new \RuntimeException('No order item found');
+        }
 
-	public function testCompare()
-	{
-		$this->assertSame( $this->object, $this->object->compare( '==', 'order.type', 'test' ) );
-	}
+        $this->assertEquals($item, $this->object->get($item->getId(), false));
+    }
 
+    public function testParse()
+    {
+        $this->assertSame($this->object, $this->object->parse([]));
+    }
 
-	public function testGet()
-	{
-		$manager = \Aimeos\MShop::create( $this->context, 'order' );
-		$items = $manager->search( $manager->filter()->slice( 0, 1 ) );
+    public function testSave()
+    {
+        $manager = $this->getMockBuilder(\Aimeos\MShop\Order\Manager\Standard::class)
+            ->setConstructorArgs([$this->context])
+            ->onlyMethods(['save'])
+            ->getMock();
 
-		if( ( $item = $items->first() ) === null ) {
-			throw new \RuntimeException( 'No order item found' );
-		}
+        \Aimeos\MShop::inject(\Aimeos\MShop\Order\Manager\Standard::class, $manager);
 
-		$this->assertEquals( $item, $this->object->get( $item->getId(), false ) );
-	}
+        $item = $manager->create();
+        $object = new \Aimeos\Controller\Frontend\Order\Standard($this->context);
 
+        $manager->expects($this->once())->method('save')->willReturnArgument(0);
 
-	public function testParse()
-	{
-		$this->assertSame( $this->object, $this->object->parse( [] ) );
-	}
+        $this->assertInstanceOf(\Aimeos\MShop\Order\Item\Iface::class, $object->save($item));
+    }
 
+    public function testSearch()
+    {
+        $user = \Aimeos\MShop::create($this->context, 'customer')->find('test@example.com');
+        $this->context->setUser($user);
 
-	public function testSave()
-	{
-		$manager = $this->getMockBuilder( \Aimeos\MShop\Order\Manager\Standard::class )
-			->setConstructorArgs( [$this->context] )
-			->onlyMethods( ['save'] )
-			->getMock();
+        $total = 0;
+        $object = new \Aimeos\Controller\Frontend\Order\Standard($this->context);
+        $items = $object->uses(['order'])->search($total);
 
-		\Aimeos\MShop::inject( \Aimeos\MShop\Order\Manager\Standard::class, $manager );
+        $this->assertGreaterThanOrEqual(4, $items->count());
+        $this->assertGreaterThanOrEqual(4, $total);
+    }
 
-		$item = $manager->create();
-		$object = new \Aimeos\Controller\Frontend\Order\Standard( $this->context );
+    public function testSlice()
+    {
+        $this->assertSame($this->object, $this->object->slice(0, 100));
+    }
 
-		$manager->expects( $this->once() )->method( 'save' )->willReturnArgument( 0 );
+    public function testSort()
+    {
+        $this->assertSame($this->object, $this->object->sort('-order.type,order.id'));
+    }
 
-		$this->assertInstanceOf( \Aimeos\MShop\Order\Item\Iface::class, $object->save( $item ) );
-	}
+    public function testUpdate()
+    {
+        $manager = $this->getMockBuilder(\Aimeos\MShop\Order\Manager\Standard::class)
+            ->setConstructorArgs([$this->context])
+            ->onlyMethods(['update'])
+            ->getMock();
 
+        \Aimeos\MShop::inject(\Aimeos\MShop\Order\Manager\Standard::class, $manager);
 
-	public function testSearch()
-	{
-		$user = \Aimeos\MShop::create( $this->context, 'customer' )->find( 'test@example.com' );
-		$this->context->setUser( $user );
+        $object = new \Aimeos\Controller\Frontend\Order\Standard($this->context);
 
-		$total = 0;
-		$object = new \Aimeos\Controller\Frontend\Order\Standard( $this->context );
-		$items = $object->uses( ['order'] )->search( $total );
+        $manager->expects($this->once())->method('update')->willReturnArgument(0);
 
-		$this->assertGreaterThanOrEqual( 4, $items->count() );
-		$this->assertGreaterThanOrEqual( 4, $total );
-	}
+        $this->assertSame($object, $object->update($manager->create()));
+    }
 
-
-	public function testSlice()
-	{
-		$this->assertSame( $this->object, $this->object->slice( 0, 100 ) );
-	}
-
-
-	public function testSort()
-	{
-		$this->assertSame( $this->object, $this->object->sort( '-order.type,order.id' ) );
-	}
-
-
-	public function testUpdate()
-	{
-		$manager = $this->getMockBuilder( \Aimeos\MShop\Order\Manager\Standard::class )
-			->setConstructorArgs( [$this->context] )
-			->onlyMethods( ['update'] )
-			->getMock();
-
-		\Aimeos\MShop::inject( \Aimeos\MShop\Order\Manager\Standard::class, $manager );
-
-		$object = new \Aimeos\Controller\Frontend\Order\Standard( $this->context );
-
-		$manager->expects( $this->once() )->method( 'update' )->willReturnArgument( 0 );
-
-		$this->assertSame( $object, $object->update( $manager->create() ) );
-	}
-
-
-	public function testUses()
-	{
-		$this->assertSame( $this->object, $this->object->uses( ['order'] ) );
-	}
+    public function testUses()
+    {
+        $this->assertSame($this->object, $this->object->uses(['order']));
+    }
 }

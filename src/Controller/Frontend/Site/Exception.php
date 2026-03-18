@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2021-2026
@@ -7,9 +9,7 @@
  * @subpackage Frontend
  */
 
-
 namespace Aimeos\Controller\Frontend\Site;
-
 
 /**
  * \Exception for site frontend controller classes.

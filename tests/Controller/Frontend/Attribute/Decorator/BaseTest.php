@@ -1,174 +1,155 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  */
 
-
 namespace Aimeos\Controller\Frontend\Attribute\Decorator;
-
 
 class Example extends Base
 {
 }
 
-
 class BaseTest extends \PHPUnit\Framework\TestCase
 {
-	private $context;
-	private $object;
-	private $stub;
+    private $context;
+    private $object;
+    private $stub;
 
+    protected function setUp(): void
+    {
+        $this->context = \TestHelper::context();
 
-	protected function setUp() : void
-	{
-		$this->context = \TestHelper::context();
+        $this->stub = $this->getMockBuilder(\Aimeos\Controller\Frontend\Attribute\Standard::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-		$this->stub = $this->getMockBuilder( \Aimeos\Controller\Frontend\Attribute\Standard::class )
-			->disableOriginalConstructor()
-			->getMock();
+        $this->object = new \Aimeos\Controller\Frontend\Attribute\Decorator\Example($this->stub, $this->context);
+    }
 
-		$this->object = new \Aimeos\Controller\Frontend\Attribute\Decorator\Example( $this->stub, $this->context );
-	}
+    protected function tearDown(): void
+    {
+        unset($this->context, $this->object, $this->stub);
+    }
 
+    public function testCall()
+    {
+        $stub = $this->getMockBuilder(\Aimeos\Controller\Frontend\Attribute\Standard::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['__call'])
+            ->getMock();
 
-	protected function tearDown() : void
-	{
-		unset( $this->context, $this->object, $this->stub );
-	}
+        $object = new \Aimeos\Controller\Frontend\Attribute\Decorator\Example($stub, $this->context);
 
+        $stub->expects($this->once())->method('__call')->willReturn(true);
 
-	public function testCall()
-	{
-		$stub = $this->getMockBuilder( \Aimeos\Controller\Frontend\Attribute\Standard::class )
-			->disableOriginalConstructor()
-			->onlyMethods( ['__call'] )
-			->getMock();
+        $this->assertTrue($object->invalid());
+    }
 
-		$object = new \Aimeos\Controller\Frontend\Attribute\Decorator\Example( $stub, $this->context );
+    public function testAttribute()
+    {
+        $this->assertSame($this->object, $this->object->attribute([1, 3]));
+    }
 
-		$stub->expects( $this->once() )->method( '__call' )->willReturn( true );
+    public function testDomain()
+    {
+        $this->assertSame($this->object, $this->object->domain('catalog'));
+    }
 
-		$this->assertTrue( $object->invalid() );
-	}
+    public function testCompare()
+    {
+        $this->assertSame($this->object, $this->object->compare('==', 'attribute.code', 'test'));
+    }
 
+    public function testFind()
+    {
+        $item = \Aimeos\MShop::create($this->context, 'attribute')->create();
+        $expected = \Aimeos\MShop\Attribute\Item\Iface::class;
 
-	public function testAttribute()
-	{
-		$this->assertSame( $this->object, $this->object->attribute( [1, 3] ) );
-	}
+        $this->stub->expects($this->once())->method('find')
+            ->willReturn($item);
 
+        $this->assertInstanceOf($expected, $this->object->find('test', 'color'));
+    }
 
-	public function testDomain()
-	{
-		$this->assertSame( $this->object, $this->object->domain( 'catalog' ) );
-	}
+    public function testFunction()
+    {
+        $this->stub->expects($this->once())->method('function')
+            ->willReturn('attribute:prop("type",null,"value")');
 
+        $str = $this->object->function('attribute:prop', ['type', null, 'value']);
+        $this->assertEquals('attribute:prop("type",null,"value")', $str);
+    }
 
-	public function testCompare()
-	{
-		$this->assertSame( $this->object, $this->object->compare( '==', 'attribute.code', 'test' ) );
-	}
+    public function testGet()
+    {
+        $item = \Aimeos\MShop::create($this->context, 'attribute')->create();
+        $expected = \Aimeos\MShop\Attribute\Item\Iface::class;
 
+        $this->stub->expects($this->once())->method('get')
+            ->willReturn($item);
 
-	public function testFind()
-	{
-		$item = \Aimeos\MShop::create( $this->context, 'attribute' )->create();
-		$expected = \Aimeos\MShop\Attribute\Item\Iface::class;
+        $this->assertInstanceOf($expected, $this->object->get(1));
+    }
 
-		$this->stub->expects( $this->once() )->method( 'find' )
-			->willReturn( $item );
+    public function testHas()
+    {
+        $this->assertSame($this->object, $this->object->has('price', 'default', -1));
+    }
 
-		$this->assertInstanceOf( $expected, $this->object->find( 'test', 'color' ) );
-	}
+    public function testParse()
+    {
+        $this->assertSame($this->object, $this->object->parse([]));
+    }
 
+    public function testProperty()
+    {
+        $this->assertSame($this->object, $this->object->property('test', 'value'));
+    }
 
-	public function testFunction()
-	{
-		$this->stub->expects( $this->once() )->method( 'function' )
-			->willReturn( 'attribute:prop("type",null,"value")' );
+    public function testSearch()
+    {
+        $item = \Aimeos\MShop::create($this->context, 'attribute')->create();
+        $expected = \Aimeos\MShop\Attribute\Item\Iface::class;
+        $total = 0;
 
-		$str = $this->object->function( 'attribute:prop', ['type', null, 'value'] );
-		$this->assertEquals( 'attribute:prop("type",null,"value")', $str );
-	}
+        $this->stub->expects($this->once())->method('search')
+            ->willReturn(map([$item]));
 
+        $this->assertEquals([$item], $this->object->search($total)->toArray());
+    }
 
-	public function testGet()
-	{
-		$item = \Aimeos\MShop::create( $this->context, 'attribute' )->create();
-		$expected = \Aimeos\MShop\Attribute\Item\Iface::class;
+    public function testSlice()
+    {
+        $this->assertSame($this->object, $this->object->slice(0, 100));
+    }
 
-		$this->stub->expects( $this->once() )->method( 'get' )
-			->willReturn( $item );
+    public function testSort()
+    {
+        $this->assertSame($this->object, $this->object->sort('position'));
+    }
 
-		$this->assertInstanceOf( $expected, $this->object->get( 1 ) );
-	}
+    public function testUses()
+    {
+        $this->assertSame($this->object, $this->object->uses(['text']));
+    }
 
+    public function testGetController()
+    {
+        $result = $this->access('getController')->invokeArgs($this->object, []);
 
-	public function testHas()
-	{
-		$this->assertSame( $this->object, $this->object->has( 'price', 'default', -1 ) );
-	}
+        $this->assertSame($this->stub, $result);
+    }
 
+    protected function access($name)
+    {
+        $class = new \ReflectionClass(\Aimeos\Controller\Frontend\Attribute\Decorator\Base::class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
 
-	public function testParse()
-	{
-		$this->assertSame( $this->object, $this->object->parse( [] ) );
-	}
-
-
-	public function testProperty()
-	{
-		$this->assertSame( $this->object, $this->object->property( 'test', 'value' ) );
-	}
-
-
-	public function testSearch()
-	{
-		$item = \Aimeos\MShop::create( $this->context, 'attribute' )->create();
-		$expected = \Aimeos\MShop\Attribute\Item\Iface::class;
-		$total = 0;
-
-		$this->stub->expects( $this->once() )->method( 'search' )
-			->willReturn( map( [$item] ) );
-
-		$this->assertEquals( [$item], $this->object->search( $total )->toArray() );
-	}
-
-
-	public function testSlice()
-	{
-		$this->assertSame( $this->object, $this->object->slice( 0, 100 ) );
-	}
-
-
-	public function testSort()
-	{
-		$this->assertSame( $this->object, $this->object->sort( 'position' ) );
-	}
-
-
-	public function testUses()
-	{
-		$this->assertSame( $this->object, $this->object->uses( ['text'] ) );
-	}
-
-
-	public function testGetController()
-	{
-		$result = $this->access( 'getController' )->invokeArgs( $this->object, [] );
-
-		$this->assertSame( $this->stub, $result );
-	}
-
-
-	protected function access( $name )
-	{
-		$class = new \ReflectionClass( \Aimeos\Controller\Frontend\Attribute\Decorator\Base::class );
-		$method = $class->getMethod( $name );
-		$method->setAccessible( true );
-
-		return $method;
-	}
+        return $method;
+    }
 }

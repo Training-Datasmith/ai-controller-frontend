@@ -1,208 +1,186 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  */
 
-
 namespace Aimeos\Controller\Frontend\Basket\Decorator;
-
 
 class Example extends Base
 {
 }
 
-
 class BaseTest extends \PHPUnit\Framework\TestCase
 {
-	private $context;
-	private $object;
-	private $stub;
+    private $context;
+    private $object;
+    private $stub;
 
+    protected function setUp(): void
+    {
+        $this->context = \TestHelper::context();
 
-	protected function setUp() : void
-	{
-		$this->context = \TestHelper::context();
+        $this->stub = $this->getMockBuilder(\Aimeos\Controller\Frontend\Basket\Standard::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-		$this->stub = $this->getMockBuilder( \Aimeos\Controller\Frontend\Basket\Standard::class )
-			->disableOriginalConstructor()
-			->getMock();
+        $this->object = new \Aimeos\Controller\Frontend\Basket\Decorator\Example($this->stub, $this->context);
+    }
 
-		$this->object = new \Aimeos\Controller\Frontend\Basket\Decorator\Example( $this->stub, $this->context );
-	}
+    protected function tearDown(): void
+    {
+        unset($this->context, $this->object, $this->stub);
+    }
 
+    public function testCall()
+    {
+        $stub = $this->getMockBuilder(\Aimeos\Controller\Frontend\Basket\Standard::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['__call'])
+            ->getMock();
 
-	protected function tearDown() : void
-	{
-		unset( $this->context, $this->object, $this->stub );
-	}
+        $object = new \Aimeos\Controller\Frontend\Basket\Decorator\Example($stub, $this->context);
 
+        $stub->expects($this->once())->method('__call')->willReturn(true);
 
-	public function testCall()
-	{
-		$stub = $this->getMockBuilder( \Aimeos\Controller\Frontend\Basket\Standard::class )
-			->disableOriginalConstructor()
-			->onlyMethods( ['__call'] )
-			->getMock();
+        $this->assertTrue($object->invalid());
+    }
 
-		$object = new \Aimeos\Controller\Frontend\Basket\Decorator\Example( $stub, $this->context );
+    public function testAdd()
+    {
+        $this->stub->expects($this->once())->method('add');
+        $this->assertSame($this->object, $this->object->add([]));
+    }
 
-		$stub->expects( $this->once() )->method( '__call' )->willReturn( true );
+    public function testClear()
+    {
+        $this->stub->expects($this->once())->method('clear');
+        $this->assertSame($this->object, $this->object->clear());
+    }
 
-		$this->assertTrue( $object->invalid() );
-	}
+    public function testGet()
+    {
+        $context = \TestHelper::context();
+        $order = \Aimeos\MShop::create($context, 'order')->create();
 
+        $this->stub->expects($this->once())->method('get')->willReturn($order);
 
-	public function testAdd()
-	{
-		$this->stub->expects( $this->once() )->method( 'add' );
-		$this->assertSame( $this->object, $this->object->add( [] ) );
-	}
+        $this->assertInstanceOf(\Aimeos\MShop\Order\Item\Iface::class, $this->object->get());
+    }
 
+    public function testSave()
+    {
+        $this->stub->expects($this->once())->method('save');
+        $this->assertSame($this->object, $this->object->save());
+    }
 
-	public function testClear()
-	{
-		$this->stub->expects( $this->once() )->method( 'clear' );
-		$this->assertSame( $this->object, $this->object->clear() );
-	}
+    public function testSetType()
+    {
+        $this->stub->expects($this->once())->method('setType');
+        $this->assertSame($this->object, $this->object->setType('test'));
+    }
 
+    public function testStore()
+    {
+        $basket = \Aimeos\MShop::create($this->context, 'order')->create();
 
-	public function testGet()
-	{
-		$context = \TestHelper::context();
-		$order = \Aimeos\MShop::create( $context, 'order' )->create();
+        $this->stub->expects($this->once())->method('store')->willReturn($basket);
 
-		$this->stub->expects( $this->once() )->method( 'get' )->willReturn( $order );
+        $this->assertInstanceOf(\Aimeos\MShop\Order\Item\Iface::class, $this->object->store());
+    }
 
-		$this->assertInstanceOf( \Aimeos\MShop\Order\Item\Iface::class, $this->object->get() );
-	}
+    public function testLoad()
+    {
+        $basket = \Aimeos\MShop::create($this->context, 'order')->create();
 
+        $this->stub->expects($this->once())->method('load')->willReturn($basket);
 
-	public function testSave()
-	{
-		$this->stub->expects( $this->once() )->method( 'save' );
-		$this->assertSame( $this->object, $this->object->save() );
-	}
+        $this->assertInstanceOf(\Aimeos\MShop\Order\Item\Iface::class, $this->object->load(-1));
+    }
 
+    public function testAddProduct()
+    {
+        $product = \Aimeos\MShop::create($this->context, 'product')->create();
 
-	public function testSetType()
-	{
-		$this->stub->expects( $this->once() )->method( 'setType' );
-		$this->assertSame( $this->object, $this->object->setType( 'test' ) );
-	}
+        $this->stub->expects($this->once())->method('addProduct');
 
+        $this->assertSame($this->object, $this->object->addProduct($product));
+    }
 
-	public function testStore()
-	{
-		$basket = \Aimeos\MShop::create( $this->context, 'order' )->create();
+    public function testDeleteProduct()
+    {
+        $this->stub->expects($this->once())->method('deleteProduct');
 
-		$this->stub->expects( $this->once() )->method( 'store' )->willReturn( $basket );
+        $this->assertSame($this->object, $this->object->deleteProduct(0));
+    }
 
-		$this->assertInstanceOf( \Aimeos\MShop\Order\Item\Iface::class, $this->object->store() );
-	}
+    public function testUpdateProduct()
+    {
+        $this->stub->expects($this->once())->method('updateProduct');
 
+        $this->assertSame($this->object, $this->object->updateProduct(0, 1));
+    }
 
-	public function testLoad()
-	{
-		$basket = \Aimeos\MShop::create( $this->context, 'order' )->create();
+    public function testAddCoupon()
+    {
+        $this->stub->expects($this->once())->method('addCoupon');
 
-		$this->stub->expects( $this->once() )->method( 'load' )->willReturn( $basket );
+        $this->assertSame($this->object, $this->object->addCoupon('test'));
+    }
 
-		$this->assertInstanceOf( \Aimeos\MShop\Order\Item\Iface::class, $this->object->load( -1 ) );
-	}
+    public function testDeleteCoupon()
+    {
+        $this->stub->expects($this->once())->method('deleteCoupon');
 
+        $this->assertSame($this->object, $this->object->deleteCoupon('test'));
+    }
 
-	public function testAddProduct()
-	{
-		$product = \Aimeos\MShop::create( $this->context, 'product' )->create();
+    public function testAddAddress()
+    {
+        $this->stub->expects($this->once())->method('addAddress');
 
-		$this->stub->expects( $this->once() )->method( 'addProduct' );
+        $this->assertSame($this->object, $this->object->addAddress('payment', []));
+    }
 
-		$this->assertSame( $this->object, $this->object->addProduct( $product ) );
-	}
+    public function testDeleteAddress()
+    {
+        $this->stub->expects($this->once())->method('deleteAddress');
 
+        $this->assertSame($this->object, $this->object->deleteAddress('payment'));
+    }
 
-	public function testDeleteProduct()
-	{
-		$this->stub->expects( $this->once() )->method( 'deleteProduct' );
+    public function testAddService()
+    {
+        $item = \Aimeos\MShop::create($this->context, 'service')->create()->setType('payment');
 
-		$this->assertSame( $this->object, $this->object->deleteProduct( 0 ) );
-	}
+        $this->stub->expects($this->once())->method('addService');
 
+        $this->assertSame($this->object, $this->object->addService($item));
+    }
 
-	public function testUpdateProduct()
-	{
-		$this->stub->expects( $this->once() )->method( 'updateProduct' );
+    public function testDeleteService()
+    {
+        $this->stub->expects($this->once())->method('deleteService');
 
-		$this->assertSame( $this->object, $this->object->updateProduct( 0, 1 ) );
-	}
+        $this->assertSame($this->object, $this->object->deleteService('payment'));
+    }
 
+    public function testGetController()
+    {
+        $result = $this->access('getController')->invokeArgs($this->object, []);
 
-	public function testAddCoupon()
-	{
-		$this->stub->expects( $this->once() )->method( 'addCoupon' );
+        $this->assertSame($this->stub, $result);
+    }
 
-		$this->assertSame( $this->object, $this->object->addCoupon( 'test' ) );
-	}
+    protected function access($name)
+    {
+        $class = new \ReflectionClass(\Aimeos\Controller\Frontend\Basket\Decorator\Base::class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
 
-
-	public function testDeleteCoupon()
-	{
-		$this->stub->expects( $this->once() )->method( 'deleteCoupon' );
-
-		$this->assertSame( $this->object, $this->object->deleteCoupon( 'test' ) );
-	}
-
-
-	public function testAddAddress()
-	{
-		$this->stub->expects( $this->once() )->method( 'addAddress' );
-
-		$this->assertSame( $this->object, $this->object->addAddress( 'payment', [] ) );
-	}
-
-
-	public function testDeleteAddress()
-	{
-		$this->stub->expects( $this->once() )->method( 'deleteAddress' );
-
-		$this->assertSame( $this->object, $this->object->deleteAddress( 'payment' ) );
-	}
-
-
-	public function testAddService()
-	{
-		$item = \Aimeos\MShop::create( $this->context, 'service' )->create()->setType( 'payment' );
-
-		$this->stub->expects( $this->once() )->method( 'addService' );
-
-		$this->assertSame( $this->object, $this->object->addService( $item ) );
-	}
-
-
-	public function testDeleteService()
-	{
-		$this->stub->expects( $this->once() )->method( 'deleteService' );
-
-		$this->assertSame( $this->object, $this->object->deleteService( 'payment' ) );
-	}
-
-
-	public function testGetController()
-	{
-		$result = $this->access( 'getController' )->invokeArgs( $this->object, [] );
-
-		$this->assertSame( $this->stub, $result );
-	}
-
-
-	protected function access( $name )
-	{
-		$class = new \ReflectionClass( \Aimeos\Controller\Frontend\Basket\Decorator\Base::class );
-		$method = $class->getMethod( $name );
-		$method->setAccessible( true );
-
-		return $method;
-	}
+        return $method;
+    }
 }

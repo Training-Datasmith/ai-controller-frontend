@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -8,9 +10,7 @@
  * @subpackage Frontend
  */
 
-
 namespace Aimeos\Controller\Frontend\Order;
-
 
 /**
  * Interface for order frontend controllers.
@@ -20,88 +20,88 @@ namespace Aimeos\Controller\Frontend\Order;
  */
 interface Iface
 {
-	/**
-	 * Adds generic condition for filtering orders
-	 *
-	 * @param string $operator Comparison operator, e.g. "==", "!=", "<", "<=", ">=", ">", "=~", "~="
-	 * @param string $key Search key defined by the order manager, e.g. "order.status"
-	 * @param array|string $value Value or list of values to compare to
-	 * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
-	 * @since 2019.04
-	 */
-	public function compare( string $operator, string $key, $value ) : Iface;
+    /**
+     * Adds generic condition for filtering orders
+     *
+     * @param string $operator Comparison operator, e.g. "==", "!=", "<", "<=", ">=", ">", "=~", "~="
+     * @param string $key Search key defined by the order manager, e.g. "order.status"
+     * @param array|string $value Value or list of values to compare to
+     * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
+     * @since 2019.04
+     */
+    public function compare(string $operator, string $key, $value): Iface;
 
-	/**
-	 * Returns the order for the given order ID
-	 *
-	 * @param string $id Unique order ID
-	 * @param bool $default Use default criteria to limit orders
-	 * @return \Aimeos\MShop\Order\Item\Iface Order item object
-	 * @since 2019.04
-	 */
-	public function get( string $id, bool $default = true ) : \Aimeos\MShop\Order\Item\Iface;
+    /**
+     * Returns the order for the given order ID
+     *
+     * @param string $id Unique order ID
+     * @param bool $default Use default criteria to limit orders
+     * @return \Aimeos\MShop\Order\Item\Iface Order item object
+     * @since 2019.04
+     */
+    public function get(string $id, bool $default = true): \Aimeos\MShop\Order\Item\Iface;
 
-	/**
-	 * Parses the given array and adds the conditions to the list of conditions
-	 *
-	 * @param array $conditions List of conditions, e.g. ['&&' => [['>' => ['order.statuspayment' => 0]], ['==' => ['order.type' => 'web']]]]
-	 * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
-	 * @since 2019.04
-	 */
-	public function parse( array $conditions ) : Iface;
+    /**
+     * Parses the given array and adds the conditions to the list of conditions
+     *
+     * @param array $conditions List of conditions, e.g. ['&&' => [['>' => ['order.statuspayment' => 0]], ['==' => ['order.type' => 'web']]]]
+     * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
+     * @since 2019.04
+     */
+    public function parse(array $conditions): Iface;
 
-	/**
-	 * Updates the given order item in the storage
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Iface $orderItem Order item object
-	 * @return \Aimeos\MShop\Order\Item\Iface $orderItem Saved order item object
-	 * @since 2019.04
-	 */
-	public function save( \Aimeos\MShop\Order\Item\Iface $orderItem ) : \Aimeos\MShop\Order\Item\Iface;
+    /**
+     * Updates the given order item in the storage
+     *
+     * @param \Aimeos\MShop\Order\Item\Iface $orderItem Order item object
+     * @return \Aimeos\MShop\Order\Item\Iface $orderItem Saved order item object
+     * @since 2019.04
+     */
+    public function save(\Aimeos\MShop\Order\Item\Iface $orderItem): \Aimeos\MShop\Order\Item\Iface;
 
-	/**
-	 * Returns the orders filtered by the previously assigned conditions
-	 *
-	 * @param int &$total Parameter where the total number of found attributes will be stored in
-	 * @return \Aimeos\Map Ordered list of items implementing \Aimeos\MShop\Order\Item\Iface
-	 * @since 2019.04
-	 */
-	public function search( ?int &$total = null ) : \Aimeos\Map;
+    /**
+     * Returns the orders filtered by the previously assigned conditions
+     *
+     * @param int &$total Parameter where the total number of found attributes will be stored in
+     * @return \Aimeos\Map Ordered list of items implementing \Aimeos\MShop\Order\Item\Iface
+     * @since 2019.04
+     */
+    public function search(?int &$total = null): \Aimeos\Map;
 
-	/**
-	 * Sets the start value and the number of returned orders for slicing the list of found orders
-	 *
-	 * @param int $start Start value of the first order in the list
-	 * @param int $limit Number of returned orders
-	 * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
-	 * @since 2019.04
-	 */
-	public function slice( int $start, int $limit ) : Iface;
+    /**
+     * Sets the start value and the number of returned orders for slicing the list of found orders
+     *
+     * @param int $start Start value of the first order in the list
+     * @param int $limit Number of returned orders
+     * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
+     * @since 2019.04
+     */
+    public function slice(int $start, int $limit): Iface;
 
-	/**
-	 * Sets the sorting of the result list
-	 *
-	 * @param string|null $key Sorting of the result list like "-order.id", null for no sorting
-	 * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
-	 * @since 2019.04
-	 */
-	public function sort( ?string $key = null ) : Iface;
+    /**
+     * Sets the sorting of the result list
+     *
+     * @param string|null $key Sorting of the result list like "-order.id", null for no sorting
+     * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
+     * @since 2019.04
+     */
+    public function sort(?string $key = null): Iface;
 
-	/**
-	 * Updates stock levels and coupons counts
-	 *
-	 * @param \Aimeos\MShop\Order\Item\Iface $orderItem Order item object
-	 * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
-	 * @since 2024.01
-	 */
-	public function update( \Aimeos\MShop\Order\Item\Iface $orderItem ) : Iface;
+    /**
+     * Updates stock levels and coupons counts
+     *
+     * @param \Aimeos\MShop\Order\Item\Iface $orderItem Order item object
+     * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
+     * @since 2024.01
+     */
+    public function update(\Aimeos\MShop\Order\Item\Iface $orderItem): Iface;
 
-	/**
-	 * Sets the referenced domains that will be fetched too when retrieving items
-	 *
-	 * @param array $domains Domain names of the referenced items that should be fetched too
-	 * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
-	 * @since 2020.04
-	 */
-	public function uses( array $domains ) : Iface;
+    /**
+     * Sets the referenced domains that will be fetched too when retrieving items
+     *
+     * @param array $domains Domain names of the referenced items that should be fetched too
+     * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
+     * @since 2020.04
+     */
+    public function uses(array $domains): Iface;
 }
