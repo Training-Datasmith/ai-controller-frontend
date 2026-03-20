@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2021-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Common\Decorator;
 
 /**
@@ -25,36 +23,33 @@ trait Traits
      * @param \Aimeos\Base\Criteria\Expression\Iface|null $expr Compare, combine or sort expression
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function addExpression(?\Aimeos\Base\Criteria\Expression\Iface $expr = null): \Aimeos\Controller\Frontend\Iface
+    public function add_expression(?\Aimeos\Base\Criteria\Expression\Iface $expr = null): \Aimeos\Controller\Frontend\Iface
     {
-        $this->getController()->addExpression($expr);
+        $this->get_controller()->add_expression($expr);
         return $this;
     }
-
     /**
      * Returns the compare and combine expressions added by addExpression()
      *
      * @return array List of compare and combine expressions
      */
-    public function getConditions(): array
+    public function get_conditions(): array
     {
-        $this->getController()->getConditions();
+        $this->get_controller()->get_conditions();
     }
-
     /**
      * Returns the compare and combine expressions added by addExpression()
      *
      * @return array List of sort expressions
      */
-    public function getSortations(): array
+    public function get_sortations(): array
     {
-        $this->getController()->getSortations();
+        $this->get_controller()->get_sortations();
     }
-
     /**
      * Returns the frontend controller
      *
      * @return \Aimeos\Controller\Frontend\Iface Frontend controller object
      */
-    abstract protected function getController(): \Aimeos\Controller\Frontend\Iface;
+    abstract protected function get_controller(): \Aimeos\Controller\Frontend\Iface;
 }

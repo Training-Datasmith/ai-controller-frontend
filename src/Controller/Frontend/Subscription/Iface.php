@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2018-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Subscription;
 
 /**
@@ -25,8 +23,7 @@ interface Iface
      * @param string $id Unique subscription ID
      * @return \Aimeos\MShop\Subscription\Item\Iface Canceled subscription item
      */
-    public function cancel(string $id): \Aimeos\MShop\Subscription\Item\Iface;
-
+    public function cancel(string $id): \Aimeos\M_Shop\Subscription\Item\Iface;
     /**
      * Adds generic condition for filtering
      *
@@ -37,7 +34,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the subscription for the given subscription ID
      *
@@ -45,15 +41,13 @@ interface Iface
      * @return \Aimeos\MShop\Subscription\Item\Iface Subscription item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Subscription\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Subscription\Item\Iface;
     /**
      * Returns the available interval attribute items
      *
      * @return \Aimeos\Map Associative list of intervals as keys and items implementing \Aimeos\MShop\Attribute\Item\Iface
      */
-    public function getIntervals(): \Aimeos\Map;
-
+    public function get_intervals(): \Aimeos\Map;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -62,15 +56,13 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Saves the modified subscription item
      *
      * @param \Aimeos\MShop\Subscription\Item\Iface $item Subscription object
      * @return \Aimeos\MShop\Subscription\Item\Iface Saved subscription item
      */
-    public function save(\Aimeos\MShop\Subscription\Item\Iface $item): \Aimeos\MShop\Subscription\Item\Iface;
-
+    public function save(\Aimeos\M_Shop\Subscription\Item\Iface $item): \Aimeos\M_Shop\Subscription\Item\Iface;
     /**
      * Returns the subscriptions filtered by the previously assigned conditions
      *
@@ -79,7 +71,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned subscription items for slicing the list of found subscription items
      *
@@ -89,7 +80,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -98,7 +88,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

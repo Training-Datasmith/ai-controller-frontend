@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2016-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Basket\Decorator;
 
 /**
@@ -32,50 +30,35 @@ class Category extends Base implements \Aimeos\Controller\Frontend\Basket\Iface,
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If the product isn't available
      */
-    public function addProduct(
-        \Aimeos\MShop\Product\Item\Iface $product,
-        float $quantity = 1,
-        array $variant = [],
-        array $config = [],
-        array $custom = [],
-        string $stocktype = 'default',
-        ?string $siteId = null
-    ): \Aimeos\Controller\Frontend\Basket\Iface {
-        if ($product->getListItems('catalog')->isEmpty()) {
+    public function add_product(\Aimeos\M_Shop\Product\Item\Iface $product, float $quantity = 1, array $variant = [], array $config = [], array $custom = [], string $stocktype = 'default', ?string $site_id = null): \Aimeos\Controller\Frontend\Basket\Iface
+    {
+        if ($product->get_list_items('catalog')->is_empty()) {
             $context = $this->context();
-            $manager = \Aimeos\MShop::create($context, 'product');
-
+            $manager = \Aimeos\M_Shop::create($context, 'product');
             $filter = $manager->filter(true);
-            $func = $filter->make('product:has', ['product', 'default', $product->getId()]);
+            $func = $filter->make('product:has', ['product', 'default', $product->get_id()]);
             $filter->add($filter->is($func, '!=', null));
-
-            $prodIds = $manager->search($filter)->keys()->all();
-
-            if (empty($prodIds) || !$this->checkCategory($prodIds)) {
+            $prod_ids = $manager->search($filter)->keys()->all();
+            if (empty($prod_ids) || !$this->check_category($prod_ids)) {
                 $msg = $context->translate('controller/frontend', 'Adding product with ID "%1$s" is not allowed');
-                throw new \Aimeos\Controller\Frontend\Basket\Exception(sprintf($msg, $product->getId()));
+                throw new \Aimeos\Controller\Frontend\Basket\Exception(sprintf($msg, $product->get_id()));
             }
         }
-
-        $this->getController()->addProduct($product, $quantity, $variant, $config, $custom, $stocktype, $siteId);
-
+        $this->get_controller()->add_product($product, $quantity, $variant, $config, $custom, $stocktype, $site_id);
         return $this;
     }
-
     /**
      * Checks if the given product IDs are assigned to a category
      *
      * @param iterable $prodIds Unique product IDs to check for
      * @return bool True if at least one product ID is assigned to a category, false if not
      */
-    protected function checkCategory(iterable $prodIds): bool
+    protected function check_category(iterable $prod_ids): bool
     {
-        $manager = \Aimeos\MShop::create($this->context(), 'product');
-
+        $manager = \Aimeos\M_Shop::create($this->context(), 'product');
         $filter = $manager->filter(true)->slice(0, 1);
         $func = $filter->make('product:has', ['catalog']);
-        $filter->add($func, '!=', null)->add('product.id', '==', $prodIds);
-
-        return !$manager->search($filter)->isEmpty();
+        $filter->add($func, '!=', null)->add('product.id', '==', $prod_ids);
+        return !$manager->search($filter)->is_empty();
     }
 }

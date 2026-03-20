@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Basket;
 
 /**
@@ -32,13 +30,12 @@ class Exception extends \Aimeos\Controller\Frontend\Exception
     {
         parent::__construct($message, $code, $previous);
     }
-
     /**
      * Gets the error codes of the exception
      *
      * @return array list of error codes
      */
-    public function getErrors(): array
+    public function get_errors(): array
     {
         return $this->errors;
     }

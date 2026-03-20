@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2021-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Site;
 
 /**
@@ -22,7 +20,6 @@ interface Iface
     public const ONE = 1;
     public const LIST = 2;
     public const TREE = 3;
-
     /**
      * Adds generic condition for filtering attributes
      *
@@ -33,7 +30,6 @@ interface Iface
      * @since 2021.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the category for the given site code
      *
@@ -41,8 +37,7 @@ interface Iface
      * @return \Aimeos\MShop\Locale\Item\Site\Iface Site item including the referenced domains items
      * @since 2021.04
      */
-    public function find(string $code): \Aimeos\MShop\Locale\Item\Site\Iface;
-
+    public function find(string $code): \Aimeos\M_Shop\Locale\Item\Site\Iface;
     /**
      * Returns the category for the given site ID
      *
@@ -50,8 +45,7 @@ interface Iface
      * @return \Aimeos\MShop\Locale\Item\Site\Iface Site item including the referenced domains items
      * @since 2021.04
      */
-    public function get(string $id): \Aimeos\MShop\Locale\Item\Site\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Locale\Item\Site\Iface;
     /**
      * Returns the list of sites up to the root node including the node given by its ID
      *
@@ -59,8 +53,7 @@ interface Iface
      * @return \Aimeos\MShop\Locale\Item\Site\Iface[] Associative list of sites
      * @since 2021.04
      */
-    public function getPath(string $id);
-
+    public function get_path(string $id);
     /**
      * Returns the sites filtered by the previously assigned conditions
      *
@@ -68,8 +61,7 @@ interface Iface
      * @return \Aimeos\MShop\Locale\Item\Site\Iface Site tree
      * @since 2021.04
      */
-    public function getTree(int $level = Iface::TREE): \Aimeos\MShop\Locale\Item\Site\Iface;
-
+    public function get_tree(int $level = Iface::TREE): \Aimeos\M_Shop\Locale\Item\Site\Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -78,7 +70,6 @@ interface Iface
      * @since 2021.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Sets the site ID of node that is used as root node
      *
@@ -87,7 +78,6 @@ interface Iface
      * @since 2021.04
      */
     public function root(?string $id = null): Iface;
-
     /**
      * Returns the sites filtered by the previously assigned conditions
      *
@@ -96,7 +86,6 @@ interface Iface
      * @since 2021.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned products for slicing the list of found products
      *
@@ -106,7 +95,6 @@ interface Iface
      * @since 2021.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Stock;
 
 /**
@@ -27,7 +25,6 @@ interface Iface
      * @since 2021.01
      */
     public function product($ids): Iface;
-
     /**
      * Adds generic condition for filtering
      *
@@ -38,7 +35,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the stock item for the given stock ID
      *
@@ -46,8 +42,7 @@ interface Iface
      * @return \Aimeos\MShop\Stock\Item\Iface Stock item
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Stock\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Stock\Item\Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -56,7 +51,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Returns the stock items filtered by the previously assigned conditions
      *
@@ -65,7 +59,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned stock items for slicing the list of found stock items
      *
@@ -75,7 +68,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -84,7 +76,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Adds stock types for filtering
      *
@@ -93,7 +84,6 @@ interface Iface
      * @since 2019.04
      */
     public function type($types): Iface;
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

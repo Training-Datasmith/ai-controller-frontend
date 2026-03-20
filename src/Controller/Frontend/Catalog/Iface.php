@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Catalog;
 
 /**
@@ -22,7 +20,6 @@ interface Iface
     public const ONE = 1;
     public const LIST = 2;
     public const TREE = 3;
-
     /**
      * Adds generic condition for filtering attributes
      *
@@ -33,7 +30,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the category for the given catalog code
      *
@@ -41,8 +37,7 @@ interface Iface
      * @return \Aimeos\MShop\Catalog\Item\Iface Catalog item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Catalog\Item\Iface;
-
+    public function find(string $code): \Aimeos\M_Shop\Catalog\Item\Iface;
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -51,7 +46,6 @@ interface Iface
      * @return string Search function string that can be used in compare()
      */
     public function function(string $name, array $params): string;
-
     /**
      * Returns the category for the given catalog ID
      *
@@ -59,8 +53,7 @@ interface Iface
      * @return \Aimeos\MShop\Catalog\Item\Iface Catalog item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Catalog\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Catalog\Item\Iface;
     /**
      * Returns the list of categories up to the root node including the node given by its ID
      *
@@ -68,8 +61,7 @@ interface Iface
      * @return \Aimeos\MShop\Catalog\Item\Iface[] Associative list of categories
      * @since 2017.03
      */
-    public function getPath(string $id);
-
+    public function get_path(string $id);
     /**
      * Returns the categories filtered by the previously assigned conditions
      *
@@ -77,8 +69,7 @@ interface Iface
      * @return \Aimeos\MShop\Catalog\Item\Iface Category tree
      * @since 2019.04
      */
-    public function getTree(int $level = Iface::TREE): \Aimeos\MShop\Catalog\Item\Iface;
-
+    public function get_tree(int $level = Iface::TREE): \Aimeos\M_Shop\Catalog\Item\Iface;
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -88,8 +79,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2022.01
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface;
-
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -98,7 +88,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Returns the category for the given category URL name
      *
@@ -106,8 +95,7 @@ interface Iface
      * @return \Aimeos\MShop\Catalog\Item\Iface Catalog item including the referenced domains items
      * @since 2023.10
      */
-    public function resolve(string $name): \Aimeos\MShop\Catalog\Item\Iface;
-
+    public function resolve(string $name): \Aimeos\M_Shop\Catalog\Item\Iface;
     /**
      * Sets the catalog ID of node that is used as root node
      *
@@ -116,7 +104,6 @@ interface Iface
      * @since 2019.04
      */
     public function root(?string $id = null): Iface;
-
     /**
      * Returns the categories filtered by the previously assigned conditions
      *
@@ -125,7 +112,6 @@ interface Iface
      * @since 2019.10
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned products for slicing the list of found products
      *
@@ -135,7 +121,6 @@ interface Iface
      * @since 2019.10
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -144,7 +129,6 @@ interface Iface
      * @since 2019.10
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -153,12 +137,11 @@ interface Iface
      * @since 2019.04
      */
     public function uses(array $domains): Iface;
-
     /**
      * Limits categories returned to only visible ones depending on the given category IDs
      *
      * @param array $catIds List of category IDs
      * @return \Aimeos\Controller\Frontend\Catalog\Iface Catalog controller for fluent interface
      */
-    public function visible(array $catIds): Iface;
+    public function visible(array $cat_ids): Iface;
 }

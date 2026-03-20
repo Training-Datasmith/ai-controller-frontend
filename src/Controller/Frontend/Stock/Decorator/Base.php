@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Stock\Decorator;
 
 /**
@@ -20,18 +18,16 @@ namespace Aimeos\Controller\Frontend\Stock\Decorator;
 abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\Controller\Frontend\Common\Decorator\Iface, \Aimeos\Controller\Frontend\Stock\Iface
 {
     use \Aimeos\Controller\Frontend\Common\Decorator\Traits;
-
     /**
      * Initializes the controller decorator.
      *
      * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
      * @param \Aimeos\MShop\ContextIface $context Context object with required objects
      */
-    public function __construct(private \Aimeos\Controller\Frontend\Stock\Iface $controller, \Aimeos\MShop\ContextIface $context)
+    public function __construct(private \Aimeos\Controller\Frontend\Stock\Iface $controller, \Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
     }
-
     /**
      * Passes unknown methods to wrapped objects.
      *
@@ -42,9 +38,8 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      */
     public function __call(string $name, array $param)
     {
-        return @call_user_func_array([ $this->controller, $name ], $param);
+        return @call_user_func_array([$this->controller, $name], $param);
     }
-
     /**
      * Adds the IDs of the products for filtering
      *
@@ -57,7 +52,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->product($ids);
         return $this;
     }
-
     /**
      * Adds generic condition for filtering
      *
@@ -72,7 +66,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->compare($operator, $key, $value);
         return $this;
     }
-
     /**
      * Returns the stock item for the given stock ID
      *
@@ -80,11 +73,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Stock\Item\Iface Stock item
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Stock\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Stock\Item\Iface
     {
         return $this->controller->get($id);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -97,7 +89,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->parse($conditions);
         return $this;
     }
-
     /**
      * Returns the stock items filtered by the previously assigned conditions
      *
@@ -109,7 +100,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->search($total);
     }
-
     /**
      * Sets the start value and the number of returned stock items for slicing the list of found stock items
      *
@@ -123,7 +113,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->slice($start, $limit);
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -136,7 +125,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->sort($key);
         return $this;
     }
-
     /**
      * Adds stock types for filtering
      *
@@ -149,7 +137,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->type($types);
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -162,28 +149,24 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->uses($domains);
         return $this;
     }
-
     /**
      * Injects the reference of the outmost object
      *
      * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function setObject(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
+    public function set_object(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
     {
-        parent::setObject($object);
-
-        $this->controller->setObject($object);
-
+        parent::set_object($object);
+        $this->controller->set_object($object);
         return $this;
     }
-
     /**
      * Returns the frontend controller
      *
      * @return \Aimeos\Controller\Frontend\Iface Frontend controller object
      */
-    protected function getController(): \Aimeos\Controller\Frontend\Iface
+    protected function get_controller(): \Aimeos\Controller\Frontend\Iface
     {
         return $this->controller;
     }

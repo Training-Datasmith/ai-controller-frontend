@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Order;
 
 /**
@@ -53,7 +51,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/order/decorators/excludes
      * Excludes decorators added by the "common" option from the order frontend controllers
      *
@@ -79,7 +76,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/order/decorators/global
      * @see controller/frontend/order/decorators/local
      */
-
     /** controller/frontend/order/decorators/global
      * Adds a list of globally available decorators only to the order frontend controllers
      *
@@ -103,7 +99,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/order/decorators/excludes
      * @see controller/frontend/order/decorators/local
      */
-
     /** controller/frontend/order/decorators/local
      * Adds a list of local decorators only to the order frontend controllers
      *
@@ -128,25 +123,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/order/decorators/excludes
      * @see controller/frontend/order/decorators/global
      */
-
     private array $domains = [];
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Initializes the controller
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'order');
+        $this->manager = \Aimeos\M_Shop::create($context, 'order');
         $this->filter = $this->manager->filter(true);
-        $this->addExpression($this->filter->compare('==', 'order.customerid', $context->user()));
+        $this->add_expression($this->filter->compare('==', 'order.customerid', $context->user()));
     }
-
     /**
      * Clones objects in controller
      */
@@ -155,7 +146,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Adds generic condition for filtering orders
      *
@@ -167,10 +157,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns the order for the given order ID
      *
@@ -179,11 +168,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Order\Item\Iface Order item object
      * @since 2019.04
      */
-    public function get(string $id, ?bool $default = null): \Aimeos\MShop\Order\Item\Iface
+    public function get(string $id, ?bool $default = null): \Aimeos\M_Shop\Order\Item\Iface
     {
         return $this->manager->get($id, $this->domains, $default);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -194,12 +182,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Updates the given order item in the storage
      *
@@ -207,11 +193,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Order\Item\Iface $orderItem Saved order item object
      * @since 2019.04
      */
-    public function save(\Aimeos\MShop\Order\Item\Iface $orderItem): \Aimeos\MShop\Order\Item\Iface
+    public function save(\Aimeos\M_Shop\Order\Item\Iface $order_item): \Aimeos\M_Shop\Order\Item\Iface
     {
-        return $this->manager->save($orderItem);
+        return $this->manager->save($order_item);
     }
-
     /**
      * Returns the orders filtered by the previously assigned conditions
      *
@@ -222,15 +207,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
-        $this->addExpression($filter->getConditions());
-
-        $filter->add($filter->and($this->getConditions()));
-        $filter->setSortations($this->getSortations());
-
+        $this->add_expression($filter->get_conditions());
+        $filter->add($filter->and($this->get_conditions()));
+        $filter->set_sortations($this->get_sortations());
         return $this->manager->search($filter, $this->domains, $total);
     }
-
     /**
      * Sets the start value and the number of returned orders for slicing the list of found orders
      *
@@ -245,7 +226,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -255,16 +235,13 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
-            $this->addExpression($this->filter->sort($direction, ltrim($sortkey, '+-')));
+            $direction = $sortkey[0] === '-' ? '-' : '+';
+            $this->add_expression($this->filter->sort($direction, ltrim($sortkey, '+-')));
         }
-
         return $this;
     }
-
     /**
      * Updates stock levels and coupons counts
      *
@@ -272,12 +249,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
      * @since 2024.01
      */
-    public function update(\Aimeos\MShop\Order\Item\Iface $orderItem): Iface
+    public function update(\Aimeos\M_Shop\Order\Item\Iface $order_item): Iface
     {
-        $this->manager->update($orderItem);
+        $this->manager->update($order_item);
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -290,13 +266,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

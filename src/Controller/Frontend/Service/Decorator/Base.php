@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2016-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Service\Decorator;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
+use Psr\Http\Message\Response_Interface;
+use Psr\Http\Message\Server_Request_Interface;
 /**
  * Base for service frontend controller decorators
  *
@@ -23,18 +20,16 @@ use Psr\Http\Message\ServerRequestInterface;
 abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\Controller\Frontend\Common\Decorator\Iface, \Aimeos\Controller\Frontend\Service\Iface
 {
     use \Aimeos\Controller\Frontend\Common\Decorator\Traits;
-
     /**
      * Initializes the controller decorator.
      *
      * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
      * @param \Aimeos\MShop\ContextIface $context Context object with required objects
      */
-    public function __construct(private \Aimeos\Controller\Frontend\Service\Iface $controller, \Aimeos\MShop\ContextIface $context)
+    public function __construct(private \Aimeos\Controller\Frontend\Service\Iface $controller, \Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
     }
-
     /**
      * Passes unknown methods to wrapped objects.
      *
@@ -45,9 +40,8 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      */
     public function __call(string $name, array $param)
     {
-        return @call_user_func_array([ $this->controller, $name ], $param);
+        return @call_user_func_array([$this->controller, $name], $param);
     }
-
     /**
      * Adds generic condition for filtering services
      *
@@ -62,7 +56,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->compare($operator, $key, $value);
         return $this;
     }
-
     /**
      * Sets the global configuration for the service providers
      *
@@ -75,7 +68,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->config($conf);
         return $this;
     }
-
     /**
      * Returns the service for the given code
      *
@@ -83,11 +75,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Service\Item\Iface Service item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Service\Item\Iface
+    public function find(string $code): \Aimeos\M_Shop\Service\Item\Iface
     {
         return $this->controller->find($code);
     }
-
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -99,7 +90,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->function($name, $params);
     }
-
     /**
      * Returns the service for the given ID
      *
@@ -107,32 +97,29 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Service\Item\Iface Service item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Service\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Service\Item\Iface
     {
         return $this->controller->get($id);
     }
-
     /**
      * Returns the service item for the given ID
      *
      * @param string $serviceId Unique service ID
      * @return \Aimeos\MShop\Service\Provider\Iface Service provider object
      */
-    public function getProvider(string $serviceId): \Aimeos\MShop\Service\Provider\Iface
+    public function get_provider(string $service_id): \Aimeos\M_Shop\Service\Provider\Iface
     {
-        return $this->controller->getProvider($serviceId);
+        return $this->controller->get_provider($service_id);
     }
-
     /**
      * Returns the service providers for the given type
      *
      * @return \Aimeos\Map List of service IDs as keys and service provider objects as values
      */
-    public function getProviders(): \Aimeos\Map
+    public function get_providers(): \Aimeos\Map
     {
-        return $this->controller->getProviders();
+        return $this->controller->get_providers();
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -145,7 +132,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->parse($conditions);
         return $this;
     }
-
     /**
      * Processes the payment service for the given order
      *
@@ -157,15 +143,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, parameters, etc.
      * 	or null if no form data is required
      */
-    public function process(
-        \Aimeos\MShop\Order\Item\Iface $orderItem,
-        string $serviceId,
-        array $urls,
-        array $params
-    ): ?\Aimeos\MShop\Common\Helper\Form\Iface {
-        return $this->controller->process($orderItem, $serviceId, $urls, $params);
+    public function process(\Aimeos\M_Shop\Order\Item\Iface $order_item, string $service_id, array $urls, array $params): ?\Aimeos\M_Shop\Common\Helper\Form\Iface
+    {
+        return $this->controller->process($order_item, $service_id, $urls, $params);
     }
-
     /**
      * Returns the services filtered by the previously assigned conditions
      *
@@ -177,7 +158,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->search($total);
     }
-
     /**
      * Sets the start value and the number of returned services for slicing the list of found services
      *
@@ -191,7 +171,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->slice($start, $limit);
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -204,7 +183,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->sort($key);
         return $this;
     }
-
     /**
      * Adds attribute types for filtering
      *
@@ -217,7 +195,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->type($code);
         return $this;
     }
-
     /**
      * Updates the order status sent by payment gateway notifications
      *
@@ -226,11 +203,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @param string $code Unique code of the service used for the current order
      * @return \Psr\Http\Message\ResponseInterface Response object
      */
-    public function updatePush(ServerRequestInterface $request, ResponseInterface $response, string $code): \Psr\Http\Message\ResponseInterface
+    public function update_push(Server_Request_Interface $request, Response_Interface $response, string $code): \Psr\Http\Message\Response_Interface
     {
-        return $this->controller->updatePush($request, $response, $code);
+        return $this->controller->update_push($request, $response, $code);
     }
-
     /**
      * Updates the payment or delivery status for the given request
      *
@@ -239,11 +215,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @param string $orderid ID of the order whose payment status should be updated
      * @return \Aimeos\MShop\Order\Item\Iface $orderItem Order item that has been updated
      */
-    public function updateSync(ServerRequestInterface $request, string $code, string $orderid): \Aimeos\MShop\Order\Item\Iface
+    public function update_sync(Server_Request_Interface $request, string $code, string $orderid): \Aimeos\M_Shop\Order\Item\Iface
     {
-        return $this->controller->updateSync($request, $code, $orderid);
+        return $this->controller->update_sync($request, $code, $orderid);
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -254,31 +229,26 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     public function uses(array $domains): \Aimeos\Controller\Frontend\Service\Iface
     {
         $this->controller->uses($domains);
-
         return $this;
     }
-
     /**
      * Injects the reference of the outmost object
      *
      * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function setObject(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
+    public function set_object(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
     {
-        parent::setObject($object);
-
-        $this->controller->setObject($object);
-
+        parent::set_object($object);
+        $this->controller->set_object($object);
         return $this;
     }
-
     /**
      * Returns the frontend controller
      *
      * @return \Aimeos\Controller\Frontend\Iface Frontend controller object
      */
-    protected function getController(): \Aimeos\Controller\Frontend\Iface
+    protected function get_controller(): \Aimeos\Controller\Frontend\Iface
     {
         return $this->controller;
     }

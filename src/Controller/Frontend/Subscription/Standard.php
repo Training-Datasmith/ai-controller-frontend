@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2018-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Subscription;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2018.04
      * @category Developer
      */
-
     /** controller/frontend/subscription/decorators/excludes
      * Excludes decorators added by the "common" option from the subscription frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/subscription/decorators/global
      * @see controller/frontend/subscription/decorators/local
      */
-
     /** controller/frontend/subscription/decorators/global
      * Adds a list of globally available decorators only to the subscription frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/subscription/decorators/excludes
      * @see controller/frontend/subscription/decorators/local
      */
-
     /** controller/frontend/subscription/decorators/local
      * Adds a list of local decorators only to the subscription frontend controllers
      *
@@ -127,25 +122,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/subscription/decorators/excludes
      * @see controller/frontend/subscription/decorators/global
      */
-
     private array $domains = [];
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'subscription');
+        $this->manager = \Aimeos\M_Shop::create($context, 'subscription');
         $this->filter = $this->manager->filter();
-        $this->addExpression($this->filter->compare('==', 'order.customerid', $context->user()));
+        $this->add_expression($this->filter->compare('==', 'order.customerid', $context->user()));
     }
-
     /**
      * Clones objects in controller
      */
@@ -154,23 +145,18 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Cancels an active subscription
      *
      * @param string $id Unique subscription ID
      * @return \Aimeos\MShop\Subscription\Item\Iface Canceled subscription item
      */
-    public function cancel(string $id): \Aimeos\MShop\Subscription\Item\Iface
+    public function cancel(string $id): \Aimeos\M_Shop\Subscription\Item\Iface
     {
         $item = $this->object()->get($id);
-
-        $item = $item->setDateEnd($item->getDateNext() ?: date('Y-m-d'))
-            ->setReason(\Aimeos\MShop\Subscription\Item\Iface::REASON_CANCEL);
-
+        $item = $item->set_date_end($item->get_date_next() ?: date('Y-m-d'))->set_reason(\Aimeos\M_Shop\Subscription\Item\Iface::REASON_CANCEL);
         return $this->manager->save($item);
     }
-
     /**
      * Adds generic condition for filtering
      *
@@ -182,48 +168,35 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns the subscription item for the given ID
      *
      * @param string $id Unique subscription ID
      * @return \Aimeos\MShop\Subscription\Item\Iface Subscription object
      */
-    public function get(string $id): \Aimeos\MShop\Subscription\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Subscription\Item\Iface
     {
         $user = $this->context()->user();
-
-        $filter = $this->manager->filter(null)->add([
-            'order.customerid' => $user,
-            'subscription.id' => $id,
-        ]);
-
+        $filter = $this->manager->filter(null)->add(['order.customerid' => $user, 'subscription.id' => $id]);
         return $this->manager->search($filter, $this->domains)->first(function () use ($id, $user): void {
             $msg = 'Invalid subscription ID "%1$s" for customer ID "%2$s"';
             throw new \Aimeos\Controller\Frontend\Subscription\Exception(sprintf($msg, $id, $user));
         });
     }
-
     /**
      * Returns the available interval attribute items
      *
      * @return \Aimeos\Map Associative list of intervals as keys and items implementing \Aimeos\MShop\Attribute\Item\Iface
      */
-    public function getIntervals(): \Aimeos\Map
+    public function get_intervals(): \Aimeos\Map
     {
-        $manager = \Aimeos\MShop::create($this->context(), 'attribute');
-
-        $search = $manager->filter(true)->add([
-            'attribute.domain' => 'product',
-            'attribute.type' => 'interval',
-        ])->slice(0, 10000);
-
+        $manager = \Aimeos\M_Shop::create($this->context(), 'attribute');
+        $search = $manager->filter(true)->add(['attribute.domain' => 'product', 'attribute.type' => 'interval'])->slice(0, 10000);
         return $manager->search($search, ['text'])->col(null, 'attribute.code');
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -234,23 +207,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Saves the modified subscription item
      *
      * @param \Aimeos\MShop\Subscription\Item\Iface $item Subscription object
      * @return \Aimeos\MShop\Subscription\Item\Iface Saved subscription item
      */
-    public function save(\Aimeos\MShop\Subscription\Item\Iface $item): \Aimeos\MShop\Subscription\Item\Iface
+    public function save(\Aimeos\M_Shop\Subscription\Item\Iface $item): \Aimeos\M_Shop\Subscription\Item\Iface
     {
         return $this->manager->save($item);
     }
-
     /**
      * Returns the subscriptions filtered by the previously assigned conditions
      *
@@ -261,13 +231,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
-        $filter->setSortations($this->getSortations());
-        $filter->add($filter->and($this->getConditions()));
-
+        $filter->set_sortations($this->get_sortations());
+        $filter->add($filter->and($this->get_conditions()));
         return $this->manager->search($filter, $this->domains, $total);
     }
-
     /**
      * Sets the start value and the number of returned subscription items for slicing the list of found subscription items
      *
@@ -282,7 +249,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -292,21 +258,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             match ($sortkey) {
-                'interval' => $this->addExpression($this->filter->sort($direction, 'subscription.interval')),
-                default => $this->addExpression($this->filter->sort($direction, $sortkey)),
+                'interval' => $this->add_expression($this->filter->sort($direction, 'subscription.interval')),
+                default => $this->add_expression($this->filter->sort($direction, $sortkey)),
             };
         }
-
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -319,13 +281,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,12 +8,10 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Service;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
+use Psr\Http\Message\Response_Interface;
+use Psr\Http\Message\Server_Request_Interface;
 /**
  * Default implementation of the service frontend controller.
  *
@@ -56,7 +53,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/service/decorators/excludes
      * Excludes decorators added by the "common" option from the service frontend controllers
      *
@@ -82,7 +78,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/service/decorators/global
      * @see controller/frontend/service/decorators/local
      */
-
     /** controller/frontend/service/decorators/global
      * Adds a list of globally available decorators only to the service frontend controllers
      *
@@ -106,7 +101,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/service/decorators/excludes
      * @see controller/frontend/service/decorators/local
      */
-
     /** controller/frontend/service/decorators/local
      * Adds a list of local decorators only to the service frontend controllers
      *
@@ -131,27 +125,22 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/service/decorators/excludes
      * @see controller/frontend/service/decorators/global
      */
-
     private array $config = [];
     private array $domains = [];
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'service');
+        $this->manager = \Aimeos\M_Shop::create($context, 'service');
         $this->filter = $this->manager->filter(true);
-
-        $this->addExpression($this->filter->sort('+', 'service.position'));
+        $this->add_expression($this->filter->sort('+', 'service.position'));
     }
-
     /**
      * Clones objects in controller
      */
@@ -160,7 +149,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Adds generic condition for filtering services
      *
@@ -172,10 +160,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Sets the global configuration for the service providers
      *
@@ -188,7 +175,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->config = $conf;
         return $this;
     }
-
     /**
      * Returns the service for the given code
      *
@@ -196,11 +182,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Service\Item\Iface Service item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Service\Item\Iface
+    public function find(string $code): \Aimeos\M_Shop\Service\Item\Iface
     {
         return $this->manager->find($code, $this->domains, null, null, null);
     }
-
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -212,7 +197,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         return $this->filter->make($name, $params);
     }
-
     /**
      * Returns the service for the given ID
      *
@@ -220,44 +204,38 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Service\Item\Iface Service item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Service\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Service\Item\Iface
     {
         return $this->manager->get($id, $this->domains, null);
     }
-
     /**
      * Returns the service item for the given ID
      *
      * @param string $serviceId Unique service ID
      * @return \Aimeos\MShop\Service\Provider\Iface Service provider object
      */
-    public function getProvider(string $serviceId): \Aimeos\MShop\Service\Provider\Iface
+    public function get_provider(string $service_id): \Aimeos\M_Shop\Service\Provider\Iface
     {
-        $item = $this->manager->get($serviceId, $this->domains, true);
-        $provider = $this->manager->getProvider($item, $item->getType());
-
-        return $provider->injectGlobalConfigBE($this->config);
+        $item = $this->manager->get($service_id, $this->domains, true);
+        $provider = $this->manager->get_provider($item, $item->get_type());
+        return $provider->inject_global_config_be($this->config);
     }
-
     /**
      * Returns the service providers of the given type
      *
      * @return \Aimeos\Map List of service IDs as keys and service provider objects as values
      */
-    public function getProviders(): \Aimeos\Map
+    public function get_providers(): \Aimeos\Map
     {
         $list = [];
         $filter = clone $this->filter;
-        $filter->add($filter->and($this->getConditions()))->order('service.position');
-
+        $filter->add($filter->and($this->get_conditions()))->order('service.position');
         foreach ($this->manager->search($filter, $this->domains) as $id => $item) {
-            $list[$id] = $this->manager->getProvider($item, $item->getType());
-            $list[$id]->injectGlobalConfigBE($this->config);
+            $list[$id] = $this->manager->get_provider($item, $item->get_type());
+            $list[$id]->inject_global_config_be($this->config);
         }
-
         return map($list);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -268,12 +246,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Processes the payment service for the given order
      *
@@ -285,20 +261,13 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, parameters, etc.
      * 	or null if no form data is required
      */
-    public function process(
-        \Aimeos\MShop\Order\Item\Iface $orderItem,
-        string $serviceId,
-        array $urls,
-        array $params
-    ): ?\Aimeos\MShop\Common\Helper\Form\Iface {
-        $item = $this->manager->get($serviceId, [], true);
-
-        $provider = $this->manager->getProvider($item, $item->getType());
-        $provider->injectGlobalConfigBE($urls + $this->config);
-
-        return $provider->process($orderItem, $params);
+    public function process(\Aimeos\M_Shop\Order\Item\Iface $order_item, string $service_id, array $urls, array $params): ?\Aimeos\M_Shop\Common\Helper\Form\Iface
+    {
+        $item = $this->manager->get($service_id, [], true);
+        $provider = $this->manager->get_provider($item, $item->get_type());
+        $provider->inject_global_config_be($urls + $this->config);
+        return $provider->process($order_item, $params);
     }
-
     /**
      * Returns the services filtered by the previously assigned conditions
      *
@@ -309,12 +278,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-        $filter->add($filter->and($this->getConditions()));
-        $filter->setSortations($this->getSortations());
-
+        $filter->add($filter->and($this->get_conditions()));
+        $filter->set_sortations($this->get_sortations());
         return $this->manager->search($filter, $this->domains, $total);
     }
-
     /**
      * Sets the start value and the number of returned services for slicing the list of found services
      *
@@ -329,7 +296,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -339,21 +305,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             match ($sortkey) {
-                'type' => $this->addExpression($this->filter->sort($direction, 'service.type')),
-                default => $this->addExpression($this->filter->sort($direction, $sortkey)),
+                'type' => $this->add_expression($this->filter->sort($direction, 'service.type')),
+                default => $this->add_expression($this->filter->sort($direction, $sortkey)),
             };
         }
-
         return $this;
     }
-
     /**
      * Adds attribute types for filtering
      *
@@ -364,12 +326,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function type($code): Iface
     {
         if ($code) {
-            $this->addExpression($this->filter->compare('==', 'service.type', $code));
+            $this->add_expression($this->filter->compare('==', 'service.type', $code));
         }
-
         return $this;
     }
-
     /**
      * Updates the order status sent by payment gateway notifications
      *
@@ -378,19 +338,13 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @param string $code Unique code of the service used for the current order
      * @return \Psr\Http\Message\ResponseInterface Response object
      */
-    public function updatePush(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        string $code
-    ): \Psr\Http\Message\ResponseInterface {
+    public function update_push(Server_Request_Interface $request, Response_Interface $response, string $code): \Psr\Http\Message\Response_Interface
+    {
         $item = $this->manager->find($code);
-
-        $provider = $this->manager->getProvider($item, $item->getType());
-        $provider->injectGlobalConfigBE($this->config);
-
-        return $provider->updatePush($request, $response);
+        $provider = $this->manager->get_provider($item, $item->get_type());
+        $provider->inject_global_config_be($this->config);
+        return $provider->update_push($request, $response);
     }
-
     /**
      * Updates the payment or delivery status for the given request
      *
@@ -399,29 +353,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @param string $orderid ID of the order whose payment status should be updated
      * @return \Aimeos\MShop\Order\Item\Iface $orderItem Order item that has been updated
      */
-    public function updateSync(
-        ServerRequestInterface $request,
-        string $code,
-        string $orderid
-    ): \Aimeos\MShop\Order\Item\Iface {
+    public function update_sync(Server_Request_Interface $request, string $code, string $orderid): \Aimeos\M_Shop\Order\Item\Iface
+    {
         $ref = $this->context()->config()->get('mshop/order/manager/subdomains', []);
-        $orderItem = \Aimeos\MShop::create($this->context(), 'order')->get($orderid, $ref);
-        $serviceItem = $this->manager->find($code);
-
-        $provider = $this->manager->getProvider($serviceItem, $serviceItem->getType());
-        $provider->injectGlobalConfigBE($this->config);
-
-        if (($orderItem = $provider->updateSync($request, $orderItem)) !== null) {
-            if ($orderItem->getStatusPayment() === \Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED
-                && $provider->isImplemented(\Aimeos\MShop\Service\Provider\Payment\Base::FEAT_QUERY)
-            ) {
-                $provider->query($orderItem);
+        $order_item = \Aimeos\M_Shop::create($this->context(), 'order')->get($orderid, $ref);
+        $service_item = $this->manager->find($code);
+        $provider = $this->manager->get_provider($service_item, $service_item->get_type());
+        $provider->inject_global_config_be($this->config);
+        if (($order_item = $provider->update_sync($request, $order_item)) !== null) {
+            if ($order_item->get_status_payment() === \Aimeos\M_Shop\Order\Item\Base::PAY_UNFINISHED && $provider->is_implemented(\Aimeos\M_Shop\Service\Provider\Payment\Base::FEAT_QUERY)) {
+                $provider->query($order_item);
             }
         }
-
-        return $orderItem;
+        return $order_item;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -434,13 +379,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2014
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Order;
 
 /**
@@ -30,7 +28,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the order for the given order ID
      *
@@ -39,8 +36,7 @@ interface Iface
      * @return \Aimeos\MShop\Order\Item\Iface Order item object
      * @since 2019.04
      */
-    public function get(string $id, bool $default = true): \Aimeos\MShop\Order\Item\Iface;
-
+    public function get(string $id, bool $default = true): \Aimeos\M_Shop\Order\Item\Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -49,7 +45,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Updates the given order item in the storage
      *
@@ -57,8 +52,7 @@ interface Iface
      * @return \Aimeos\MShop\Order\Item\Iface $orderItem Saved order item object
      * @since 2019.04
      */
-    public function save(\Aimeos\MShop\Order\Item\Iface $orderItem): \Aimeos\MShop\Order\Item\Iface;
-
+    public function save(\Aimeos\M_Shop\Order\Item\Iface $order_item): \Aimeos\M_Shop\Order\Item\Iface;
     /**
      * Returns the orders filtered by the previously assigned conditions
      *
@@ -67,7 +61,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned orders for slicing the list of found orders
      *
@@ -77,7 +70,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -86,7 +78,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Updates stock levels and coupons counts
      *
@@ -94,8 +85,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Order\Iface Order controller for fluent interface
      * @since 2024.01
      */
-    public function update(\Aimeos\MShop\Order\Item\Iface $orderItem): Iface;
-
+    public function update(\Aimeos\M_Shop\Order\Item\Iface $order_item): Iface;
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

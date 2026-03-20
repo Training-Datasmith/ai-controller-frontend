@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Basket;
 
 /**
@@ -27,43 +25,37 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
     public function add(array $values): Iface;
-
     /**
      * Empties the basket and removing all products, addresses, services, etc.
      *
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
     public function clear(): Iface;
-
     /**
      * Returns the basket object.
      *
      * @return \Aimeos\MShop\Order\Item\Iface Basket holding products, addresses and delivery/payment options
      */
-    public function get(): \Aimeos\MShop\Order\Item\Iface;
-
+    public function get(): \Aimeos\M_Shop\Order\Item\Iface;
     /**
      * Explicitely persists the basket content
      *
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
     public function save(): Iface;
-
     /**
      * Sets the new basket type
      *
      * @param string $type Basket type
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function setType(string $type): Iface;
-
+    public function set_type(string $type): Iface;
     /**
      * Creates a new order object from the current basket
      *
      * @return \Aimeos\MShop\Order\Item\Iface Order object including products, addresses and services
      */
-    public function store(): \Aimeos\MShop\Order\Item\Iface;
-
+    public function store(): \Aimeos\M_Shop\Order\Item\Iface;
     /**
      * Returns the order object for the given ID
      *
@@ -72,12 +64,7 @@ interface Iface
      * @param bool $default True to add default criteria (user logged in), false if not
      * @return \Aimeos\MShop\Order\Item\Iface Order object including the given parts
      */
-    public function load(
-        string $id,
-        array $ref = ['order/address', 'order/coupon', 'order/product', 'order/service'],
-        bool $default = true
-    ): \Aimeos\MShop\Order\Item\Iface;
-
+    public function load(string $id, array $ref = ['order/address', 'order/coupon', 'order/product', 'order/service'], bool $default = true): \Aimeos\M_Shop\Order\Item\Iface;
     /**
      * Adds a product to the basket of the customer stored in the session
      *
@@ -91,24 +78,14 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If the product isn't available
      */
-    public function addProduct(
-        \Aimeos\MShop\Product\Item\Iface $product,
-        float $quantity = 1,
-        array $variant = [],
-        array $config = [],
-        array $custom = [],
-        string $stocktype = 'default',
-        ?string $siteId = null
-    ): Iface;
-
+    public function add_product(\Aimeos\M_Shop\Product\Item\Iface $product, float $quantity = 1, array $variant = [], array $config = [], array $custom = [], string $stocktype = 'default', ?string $site_id = null): Iface;
     /**
      * Deletes a product item from the basket.
      *
      * @param int $position Position number (key) of the order product item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteProduct(int $position): Iface;
-
+    public function delete_product(int $position): Iface;
     /**
      * Edits the quantity of a product item in the basket.
      *
@@ -116,8 +93,7 @@ interface Iface
      * @param float $quantity New quantiy of the product item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function updateProduct(int $position, float $quantity): Iface;
-
+    public function update_product(int $position, float $quantity): Iface;
     /**
      * Adds the given coupon code and updates the basket.
      *
@@ -125,8 +101,7 @@ interface Iface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception if the coupon code is invalid or not allowed
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function addCoupon(string $code): Iface;
-
+    public function add_coupon(string $code): Iface;
     /**
      * Removes the given coupon code and its effects from the basket.
      *
@@ -134,8 +109,7 @@ interface Iface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception if the coupon code is invalid
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteCoupon(string $code): Iface;
-
+    public function delete_coupon(string $code): Iface;
     /**
      * Adds an address of the customer to the basket
      *
@@ -144,8 +118,7 @@ interface Iface
      * @param int|null $position Position number (key) of the order address item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function addAddress(string $type, array $values = [], ?int $position = null): Iface;
-
+    public function add_address(string $type, array $values = [], ?int $position = null): Iface;
     /**
      * Removes the address of the given type and position if available
      *
@@ -153,8 +126,7 @@ interface Iface
      * @param int|null $position Position of the address in the list to overwrite
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteAddress(string $type, ?int $position = null): Iface;
-
+    public function delete_address(string $type, ?int $position = null): Iface;
     /**
      * Adds the delivery/payment service including the given configuration
      *
@@ -164,8 +136,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If given service attributes are invalid
      */
-    public function addService(\Aimeos\MShop\Service\Item\Iface $service, array $config = [], ?int $position = null): Iface;
-
+    public function add_service(\Aimeos\M_Shop\Service\Item\Iface $service, array $config = [], ?int $position = null): Iface;
     /**
      * Removes the delivery or payment service items from the basket
      *
@@ -173,5 +144,5 @@ interface Iface
      * @param int|null $position Position of the service in the list to overwrite
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteService(string $type, ?int $position = null): Iface;
+    public function delete_service(string $type, ?int $position = null): Iface;
 }

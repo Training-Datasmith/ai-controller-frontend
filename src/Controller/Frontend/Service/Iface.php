@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,12 +8,10 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Service;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
+use Psr\Http\Message\Response_Interface;
+use Psr\Http\Message\Server_Request_Interface;
 /**
  * Interface for service frontend controllers.
  *
@@ -33,7 +30,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): \Aimeos\Controller\Frontend\Service\Iface;
-
     /**
      * Sets the global configuration for the service providers
      *
@@ -42,7 +38,6 @@ interface Iface
      * @since 2024.10
      */
     public function config(array $conf): \Aimeos\Controller\Frontend\Service\Iface;
-
     /**
      * Returns the service for the given code
      *
@@ -50,8 +45,7 @@ interface Iface
      * @return \Aimeos\MShop\Service\Item\Iface Service item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Service\Item\Iface;
-
+    public function find(string $code): \Aimeos\M_Shop\Service\Item\Iface;
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -60,7 +54,6 @@ interface Iface
      * @return string Search function string that can be used in compare()
      */
     public function function(string $name, array $params): string;
-
     /**
      * Returns the service for the given ID
      *
@@ -68,23 +61,20 @@ interface Iface
      * @return \Aimeos\MShop\Service\Item\Iface Service item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Service\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Service\Item\Iface;
     /**
      * Returns the service item for the given ID
      *
      * @param string $serviceId Unique service ID
      * @return \Aimeos\MShop\Service\Provider\Iface Service provider object
      */
-    public function getProvider(string $id): \Aimeos\MShop\Service\Provider\Iface;
-
+    public function get_provider(string $id): \Aimeos\M_Shop\Service\Provider\Iface;
     /**
      * Returns the service providers
      *
      * @return \Aimeos\Map List of service IDs as keys and service provider objects as values
      */
-    public function getProviders(): \Aimeos\Map;
-
+    public function get_providers(): \Aimeos\Map;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -93,7 +83,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): \Aimeos\Controller\Frontend\Service\Iface;
-
     /**
      * Processes the payment service for the given order
      *
@@ -105,13 +94,7 @@ interface Iface
      * @return \Aimeos\MShop\Common\Helper\Form\Iface|null Form object with URL, parameters, etc.
      * 	or null if no form data is required
      */
-    public function process(
-        \Aimeos\MShop\Order\Item\Iface $orderItem,
-        string $id,
-        array $urls,
-        array $params
-    ): ?\Aimeos\MShop\Common\Helper\Form\Iface;
-
+    public function process(\Aimeos\M_Shop\Order\Item\Iface $order_item, string $id, array $urls, array $params): ?\Aimeos\M_Shop\Common\Helper\Form\Iface;
     /**
      * Returns the services filtered by the previously assigned conditions
      *
@@ -120,7 +103,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned services for slicing the list of found services
      *
@@ -130,7 +112,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): \Aimeos\Controller\Frontend\Service\Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -139,7 +120,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): \Aimeos\Controller\Frontend\Service\Iface;
-
     /**
      * Adds attribute types for filtering
      *
@@ -148,7 +128,6 @@ interface Iface
      * @since 2019.04
      */
     public function type($code): \Aimeos\Controller\Frontend\Service\Iface;
-
     /**
      * Updates the order status sent by payment gateway notifications
      *
@@ -157,12 +136,7 @@ interface Iface
      * @param string $code Unique code of the service used for the current order
      * @return \Psr\Http\Message\ResponseInterface Response object
      */
-    public function updatePush(
-        ServerRequestInterface $request,
-        ResponseInterface $response,
-        string $code
-    ): \Psr\Http\Message\ResponseInterface;
-
+    public function update_push(Server_Request_Interface $request, Response_Interface $response, string $code): \Psr\Http\Message\Response_Interface;
     /**
      * Updates the payment or delivery status for the given request
      *
@@ -171,12 +145,7 @@ interface Iface
      * @param string $orderid ID of the order whose payment status should be updated
      * @return \Aimeos\MShop\Order\Item\Iface $orderItem Order item that has been updated
      */
-    public function updateSync(
-        ServerRequestInterface $request,
-        string $code,
-        string $orderid
-    ): \Aimeos\MShop\Order\Item\Iface;
-
+    public function update_sync(Server_Request_Interface $request, string $code, string $orderid): \Aimeos\M_Shop\Order\Item\Iface;
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2016-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Basket\Decorator;
 
 /**
@@ -20,18 +18,16 @@ namespace Aimeos\Controller\Frontend\Basket\Decorator;
 abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \Aimeos\Controller\Frontend\Common\Decorator\Iface, \Aimeos\Controller\Frontend\Basket\Iface
 {
     use \Aimeos\Controller\Frontend\Common\Decorator\Traits;
-
     /**
      * Initializes the controller decorator.
      *
      * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
      * @param \Aimeos\MShop\ContextIface $context Context object with required objects
      */
-    public function __construct(private \Aimeos\Controller\Frontend\Basket\Iface $controller, \Aimeos\MShop\ContextIface $context)
+    public function __construct(private \Aimeos\Controller\Frontend\Basket\Iface $controller, \Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
     }
-
     /**
      * Passes unknown methods to wrapped objects.
      *
@@ -42,9 +38,8 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      */
     public function __call(string $name, array $param)
     {
-        return @call_user_func_array([ $this->controller, $name ], $param);
+        return @call_user_func_array([$this->controller, $name], $param);
     }
-
     /**
      * Adds values like comments to the basket
      *
@@ -56,7 +51,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
         $this->controller->add($values);
         return $this;
     }
-
     /**
      * Empties the basket and removing all products, addresses, services, etc.
      *
@@ -67,17 +61,15 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
         $this->controller->clear();
         return $this;
     }
-
     /**
      * Returns the basket object.
      *
      * @return \Aimeos\MShop\Order\Item\Iface Basket holding products, addresses and delivery/payment options
      */
-    public function get(): \Aimeos\MShop\Order\Item\Iface
+    public function get(): \Aimeos\M_Shop\Order\Item\Iface
     {
         return $this->controller->get();
     }
-
     /**
      * Explicitely persists the basket content
      *
@@ -88,29 +80,26 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
         $this->controller->save();
         return $this;
     }
-
     /**
      * Sets the new basket type
      *
      * @param string $type Basket type
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function setType(string $type): \Aimeos\Controller\Frontend\Basket\Iface
+    public function set_type(string $type): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->setType($type);
+        $this->controller->set_type($type);
         return $this;
     }
-
     /**
      * Creates a new order object from the current basket
      *
      * @return \Aimeos\MShop\Order\Item\Iface Order object including products, addresses and services
      */
-    public function store(): \Aimeos\MShop\Order\Item\Iface
+    public function store(): \Aimeos\M_Shop\Order\Item\Iface
     {
         return $this->controller->store();
     }
-
     /**
      * Returns the order object for the given ID
      *
@@ -119,14 +108,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @param bool $default True to add default criteria (user logged in), false if not
      * @return \Aimeos\MShop\Order\Item\Iface Order object including the given parts
      */
-    public function load(
-        string $id,
-        array $ref = ['order/address', 'order/coupon', 'order/product', 'order/service'],
-        bool $default = true
-    ): \Aimeos\MShop\Order\Item\Iface {
+    public function load(string $id, array $ref = ['order/address', 'order/coupon', 'order/product', 'order/service'], bool $default = true): \Aimeos\M_Shop\Order\Item\Iface
+    {
         return $this->controller->load($id, $ref, $default);
     }
-
     /**
      * Adds a product to the basket of the customer stored in the session
      *
@@ -140,31 +125,22 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If the product isn't available
      */
-    public function addProduct(
-        \Aimeos\MShop\Product\Item\Iface $product,
-        float $quantity = 1,
-        array $variant = [],
-        array $config = [],
-        array $custom = [],
-        string $stocktype = 'default',
-        ?string $siteId = null
-    ): \Aimeos\Controller\Frontend\Basket\Iface {
-        $this->controller->addProduct($product, $quantity, $variant, $config, $custom, $stocktype, $siteId);
+    public function add_product(\Aimeos\M_Shop\Product\Item\Iface $product, float $quantity = 1, array $variant = [], array $config = [], array $custom = [], string $stocktype = 'default', ?string $site_id = null): \Aimeos\Controller\Frontend\Basket\Iface
+    {
+        $this->controller->add_product($product, $quantity, $variant, $config, $custom, $stocktype, $site_id);
         return $this;
     }
-
     /**
      * Deletes a product item from the basket.
      *
      * @param int $position Position number (key) of the order product item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteProduct(int $position): \Aimeos\Controller\Frontend\Basket\Iface
+    public function delete_product(int $position): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->deleteProduct($position);
+        $this->controller->delete_product($position);
         return $this;
     }
-
     /**
      * Edits the quantity of a product item in the basket.
      *
@@ -172,12 +148,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @param float $quantity New quantiy of the product item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function updateProduct(int $position, float $quantity): \Aimeos\Controller\Frontend\Basket\Iface
+    public function update_product(int $position, float $quantity): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->updateProduct($position, $quantity);
+        $this->controller->update_product($position, $quantity);
         return $this;
     }
-
     /**
      * Adds the given coupon code and updates the basket.
      *
@@ -185,12 +160,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception if the coupon code is invalid or not allowed
      */
-    public function addCoupon(string $code): \Aimeos\Controller\Frontend\Basket\Iface
+    public function add_coupon(string $code): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->addCoupon($code);
+        $this->controller->add_coupon($code);
         return $this;
     }
-
     /**
      * Removes the given coupon code and its effects from the basket.
      *
@@ -198,12 +172,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception if the coupon code is invalid
      */
-    public function deleteCoupon(string $code): \Aimeos\Controller\Frontend\Basket\Iface
+    public function delete_coupon(string $code): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->deleteCoupon($code);
+        $this->controller->delete_coupon($code);
         return $this;
     }
-
     /**
      * Adds an address of the customer to the basket
      *
@@ -212,12 +185,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @param int|null $position Position number (key) of the order address item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function addAddress(string $type, array $values = [], ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
+    public function add_address(string $type, array $values = [], ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->addAddress($type, $values, $position);
+        $this->controller->add_address($type, $values, $position);
         return $this;
     }
-
     /**
      * Removes the address of the given type and position if available
      *
@@ -225,12 +197,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @param int|null $position Position of the address in the list to overwrite
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteAddress(string $type, ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
+    public function delete_address(string $type, ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->deleteAddress($type, $position);
+        $this->controller->delete_address($type, $position);
         return $this;
     }
-
     /**
      * Adds the delivery/payment service including the given configuration
      *
@@ -240,12 +211,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If given service attributes are invalid
      */
-    public function addService(\Aimeos\MShop\Service\Item\Iface $service, array $config = [], ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
+    public function add_service(\Aimeos\M_Shop\Service\Item\Iface $service, array $config = [], ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->addService($service, $config, $position);
+        $this->controller->add_service($service, $config, $position);
         return $this;
     }
-
     /**
      * Removes the delivery or payment service items from the basket
      *
@@ -253,33 +223,29 @@ abstract class Base extends \Aimeos\Controller\Frontend\Basket\Base implements \
      * @param int|null $position Position of the address in the list to overwrite
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteService(string $type, ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
+    public function delete_service(string $type, ?int $position = null): \Aimeos\Controller\Frontend\Basket\Iface
     {
-        $this->controller->deleteService($type, $position);
+        $this->controller->delete_service($type, $position);
         return $this;
     }
-
     /**
      * Injects the reference of the outmost object
      *
      * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function setObject(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
+    public function set_object(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
     {
-        parent::setObject($object);
-
-        $this->controller->setObject($object);
-
+        parent::set_object($object);
+        $this->controller->set_object($object);
         return $this;
     }
-
     /**
      * Returns the frontend controller
      *
      * @return \Aimeos\Controller\Frontend\Iface Frontend controller object
      */
-    protected function getController(): \Aimeos\Controller\Frontend\Iface
+    protected function get_controller(): \Aimeos\Controller\Frontend\Iface
     {
         return $this->controller;
     }

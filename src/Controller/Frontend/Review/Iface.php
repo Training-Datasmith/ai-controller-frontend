@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Review;
 
 /**
@@ -29,7 +27,6 @@ interface Iface
      * @since 2020.10
      */
     public function aggregate(string $key, ?string $value = null, ?string $type = null): \Aimeos\Map;
-
     /**
      * Adds generic condition for filtering
      *
@@ -40,7 +37,6 @@ interface Iface
      * @since 2020.10
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Deletes the review item for the given ID
      *
@@ -49,7 +45,6 @@ interface Iface
      * @since 2020.10
      */
     public function delete($ids): Iface;
-
     /**
      * Sets the review domain for filtering
      *
@@ -58,7 +53,6 @@ interface Iface
      * @since 2020.10
      */
     public function domain(string $domain): Iface;
-
     /**
      * Restricts the reviews to a specific domain item
      *
@@ -68,7 +62,6 @@ interface Iface
      * @since 2020.10
      */
     public function for(string $domain, $refid): Iface;
-
     /**
      * Returns the review for the given review ID
      *
@@ -76,8 +69,7 @@ interface Iface
      * @return \Aimeos\MShop\Review\Item\Iface Review item including the referenced domains items
      * @since 2020.10
      */
-    public function get(string $id): \Aimeos\MShop\Review\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Review\Item\Iface;
     /**
      * Returns the reviews for the logged-in user
      *
@@ -86,7 +78,6 @@ interface Iface
      * @since 2020.10
      */
     public function list(?int &$total = null): \Aimeos\Map;
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -95,15 +86,13 @@ interface Iface
      * @since 2020.10
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Saves the modified review item
      *
      * @param \Aimeos\MShop\Review\Item\Iface $item Review object
      * @return \Aimeos\MShop\Review\Item\Iface Saved review item
      */
-    public function save(\Aimeos\MShop\Review\Item\Iface $item): \Aimeos\MShop\Review\Item\Iface;
-
+    public function save(\Aimeos\M_Shop\Review\Item\Iface $item): \Aimeos\M_Shop\Review\Item\Iface;
     /**
      * Returns the reviews filtered by the previously assigned conditions
      *
@@ -112,7 +101,6 @@ interface Iface
      * @since 2020.10
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned review items for slicing the list of found review items
      *
@@ -122,7 +110,6 @@ interface Iface
      * @since 2020.10
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *

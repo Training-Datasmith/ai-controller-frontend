@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend;
 
 /**
@@ -26,27 +24,24 @@ interface Iface
      * @param \Aimeos\Base\Criteria\Expression\Iface|null $expr Compare, combine or sort expression
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function addExpression(?\Aimeos\Base\Criteria\Expression\Iface $expr = null): Iface;
-
+    public function add_expression(?\Aimeos\Base\Criteria\Expression\Iface $expr = null): Iface;
     /**
      * Returns the compare and combine expressions added by addExpression()
      *
      * @return array List of compare and combine expressions
      */
-    public function getConditions(): array;
-
+    public function get_conditions(): array;
     /**
      * Returns the compare and combine expressions added by addExpression()
      *
      * @return array List of sort expressions
      */
-    public function getSortations(): array;
-
+    public function get_sortations(): array;
     /**
      * Injects the reference of the outmost object
      *
      * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function setObject(Iface $object): Iface;
+    public function set_object(Iface $object): Iface;
 }

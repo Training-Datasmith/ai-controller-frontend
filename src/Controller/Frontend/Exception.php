@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend;
 
 /**
@@ -32,13 +30,12 @@ class Exception extends \Exception
     {
         parent::__construct($msg, $code, $previous);
     }
-
     /**
      * Returns the list of error messages.
      *
      * @return array Associative list of keys and their error messages
      */
-    public function getErrorList(): array
+    public function get_error_list(): array
     {
         return $this->list;
     }

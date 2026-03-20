@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Basket;
 
 /**
@@ -53,7 +51,6 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/basket/decorators/excludes
      * Excludes decorators added by the "common" option from the basket frontend controllers
      *
@@ -79,7 +76,6 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @see controller/frontend/basket/decorators/global
      * @see controller/frontend/basket/decorators/local
      */
-
     /** controller/frontend/basket/decorators/global
      * Adds a list of globally available decorators only to the basket frontend controllers
      *
@@ -103,7 +99,6 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @see controller/frontend/basket/decorators/excludes
      * @see controller/frontend/basket/decorators/local
      */
-
     /** controller/frontend/basket/decorators/local
      * Adds a list of local decorators only to the basket frontend controllers
      *
@@ -128,24 +123,20 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @see controller/frontend/basket/decorators/excludes
      * @see controller/frontend/basket/decorators/global
      */
-
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     private string $type = 'default';
     private array $baskets = [];
-
     /**
      * Initializes the frontend controller.
      *
      * @param \Aimeos\MShop\ContextIface $context Object storing the required instances for manaing databases
      *  connections, logger, session, etc.
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'order');
+        $this->manager = \Aimeos\M_Shop::create($context, 'order');
     }
-
     /**
      * Adds values like comments to the basket
      *
@@ -154,10 +145,9 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      */
     public function add(array $values): Iface
     {
-        $this->baskets[$this->type] = $this->get()->fromArray($values);
+        $this->baskets[$this->type] = $this->get()->from_array($values);
         return $this;
     }
-
     /**
      * Empties the basket and removing all products, addresses, services, etc.
      *
@@ -166,26 +156,22 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
     public function clear(): Iface
     {
         $this->baskets[$this->type] = $this->manager->create();
-        $this->manager->setSession($this->baskets[$this->type], $this->type);
-
+        $this->manager->set_session($this->baskets[$this->type], $this->type);
         return $this;
     }
-
     /**
      * Returns the basket object.
      *
      * @return \Aimeos\MShop\Order\Item\Iface Basket holding products, addresses and delivery/payment options
      */
-    public function get(): \Aimeos\MShop\Order\Item\Iface
+    public function get(): \Aimeos\M_Shop\Order\Item\Iface
     {
         if (!isset($this->baskets[$this->type])) {
-            $this->baskets[$this->type] = $this->manager->getSession($this->type);
-            $this->checkLocale($this->baskets[$this->type]->locale(), $this->type);
+            $this->baskets[$this->type] = $this->manager->get_session($this->type);
+            $this->check_locale($this->baskets[$this->type]->locale(), $this->type);
         }
-
         return $this->baskets[$this->type];
     }
-
     /**
      * Explicitly persists the basket content
      *
@@ -193,37 +179,33 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      */
     public function save(): Iface
     {
-        if (isset($this->baskets[$this->type]) && $this->baskets[$this->type]->isModified()) {
-            $this->baskets[$this->type]->setCustomerId((string) $this->context()->user());
-            $this->manager->setSession($this->baskets[$this->type], $this->type);
+        if (isset($this->baskets[$this->type]) && $this->baskets[$this->type]->is_modified()) {
+            $this->baskets[$this->type]->set_customer_id((string) $this->context()->user());
+            $this->manager->set_session($this->baskets[$this->type], $this->type);
         }
-
         return $this;
     }
-
     /**
      * Sets the new basket type
      *
      * @param string $type Basket type
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function setType(string $type): Iface
+    public function set_type(string $type): Iface
     {
         $this->type = $type;
         return $this;
     }
-
     /**
      * Creates a new order object from the current basket
      *
      * @return \Aimeos\MShop\Order\Item\Iface Order object including products, addresses and services
      */
-    public function store(): \Aimeos\MShop\Order\Item\Iface
+    public function store(): \Aimeos\M_Shop\Order\Item\Iface
     {
         $total = 0;
         $context = $this->context();
         $config = $context->config();
-
         /** controller/frontend/basket/limit-count
          * Maximum number of orders within the time frame
          *
@@ -241,7 +223,6 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
          * @see controller/frontend/basket/limit-seconds
          */
         $count = $config->get('controller/frontend/basket/limit-count', 5);
-
         /** controller/frontend/basket/limit-seconds
          * Order limitation time frame in seconds
          *
@@ -259,35 +240,25 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
          * @see controller/frontend/basket/limit-count
          */
         $seconds = $config->get('controller/frontend/basket/limit-seconds', 900);
-
         $search = $this->manager->filter()->slice(0, 0);
-        $expr = [
-            $search->compare('==', 'order.editor', $context->editor()),
-            $search->compare('>=', 'order.ctime', date('Y-m-d H:i:s', time() - $seconds)),
-        ];
+        $expr = [$search->compare('==', 'order.editor', $context->editor()), $search->compare('>=', 'order.ctime', date('Y-m-d H:i:s', time() - $seconds))];
         $search->add($search->and($expr));
-
         $this->manager->search($search, [], $total);
-
         if ($total >= $count) {
             $msg = $context->translate('controller/frontend', 'Temporary order limit reached');
             throw new \Aimeos\Controller\Frontend\Basket\Exception($msg, 429);
         }
-
-        $basket = $this->get()->setCustomerId((string) $context->user())->finish()->check();
-        $basket->setStatusDelivery(\Aimeos\MShop\Order\Item\Base::STAT_UNFINISHED)->setDateDelivery(null);
-        $basket->setStatusPayment(\Aimeos\MShop\Order\Item\Base::PAY_UNFINISHED)->setDatePayment(null);
-
+        $basket = $this->get()->set_customer_id((string) $context->user())->finish()->check();
+        $basket->set_status_delivery(\Aimeos\M_Shop\Order\Item\Base::STAT_UNFINISHED)->set_date_delivery(null);
+        $basket->set_status_payment(\Aimeos\M_Shop\Order\Item\Base::PAY_UNFINISHED)->set_date_payment(null);
         $this->manager->begin();
         $this->manager->save($basket);
         $this->manager->commit();
-
-        $this->save(); // for reusing unpaid orders, might have side effects (!)
-        $this->createSubscriptions($basket);
-
+        $this->save();
+        // for reusing unpaid orders, might have side effects (!)
+        $this->create_subscriptions($basket);
         return $basket;
     }
-
     /**
      * Returns the order object for the given ID
      *
@@ -296,14 +267,10 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @param bool $default True to add default criteria (user logged in), false if not
      * @return \Aimeos\MShop\Order\Item\Iface Order object including the given parts
      */
-    public function load(
-        string $id,
-        array $ref = ['order/address', 'order/coupon', 'order/product', 'order/service'],
-        bool $default = true
-    ): \Aimeos\MShop\Order\Item\Iface {
+    public function load(string $id, array $ref = ['order/address', 'order/coupon', 'order/product', 'order/service'], bool $default = true): \Aimeos\M_Shop\Order\Item\Iface
+    {
         return $this->manager->get($id, $ref, $default);
     }
-
     /**
      * Adds a product to the basket of the customer stored in the session
      *
@@ -317,63 +284,38 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If the product isn't available
      */
-    public function addProduct(
-        \Aimeos\MShop\Product\Item\Iface $product,
-        float $quantity = 1,
-        array $variant = [],
-        array $config = [],
-        array $custom = [],
-        string $stocktype = 'default',
-        ?string $siteId = null
-    ): Iface {
+    public function add_product(\Aimeos\M_Shop\Product\Item\Iface $product, float $quantity = 1, array $variant = [], array $config = [], array $custom = [], string $stocktype = 'default', ?string $site_id = null): Iface
+    {
         $quantity = $this->call('checkQuantity', $product, $quantity);
         $this->call('checkAttributes', [$product], 'custom', array_keys($custom));
         $this->call('checkAttributes', [$product], 'config', array_keys($config));
-
-        $prices = $product->getRefItems('price', 'default', 'default');
-        $hidden = $product->getRefItems('attribute', null, 'hidden');
-
-        $custAttr = $this->call('getOrderProductAttributes', 'custom', array_keys($custom), $custom);
-        $confAttr = $this->call('getOrderProductAttributes', 'config', array_keys($config), [], $config);
-        $hideAttr = $this->call('getOrderProductAttributes', 'hidden', $hidden->keys()->toArray());
-
-        $orderBaseProductItem = \Aimeos\MShop::create($this->context(), 'order/product')
-            ->create()
-            ->copyFrom($product)
-            ->setQuantity($quantity)
-            ->setStockType($stocktype)
-            ->setSiteId($siteId ?: $product->getSiteId())
-            ->setAttributeItems(array_merge($custAttr, $confAttr, $hideAttr));
-
-        $price = $this->call('calcPrice', $orderBaseProductItem, $prices, $quantity);
-        $orderBaseProductItem
-            ->setPrice($price)
-            ->setSiteId($siteId ?: $price->getSiteId())
-            ->setVendor($this->getVendor($siteId ?: $price->getSiteId()));
-
-        $this->baskets[$this->type] = $this->get()->addProduct($orderBaseProductItem);
+        $prices = $product->get_ref_items('price', 'default', 'default');
+        $hidden = $product->get_ref_items('attribute', null, 'hidden');
+        $cust_attr = $this->call('getOrderProductAttributes', 'custom', array_keys($custom), $custom);
+        $conf_attr = $this->call('getOrderProductAttributes', 'config', array_keys($config), [], $config);
+        $hide_attr = $this->call('getOrderProductAttributes', 'hidden', $hidden->keys()->to_array());
+        $order_base_product_item = \Aimeos\M_Shop::create($this->context(), 'order/product')->create()->copy_from($product)->set_quantity($quantity)->set_stock_type($stocktype)->set_site_id($site_id ?: $product->get_site_id())->set_attribute_items(array_merge($cust_attr, $conf_attr, $hide_attr));
+        $price = $this->call('calcPrice', $order_base_product_item, $prices, $quantity);
+        $order_base_product_item->set_price($price)->set_site_id($site_id ?: $price->get_site_id())->set_vendor($this->get_vendor($site_id ?: $price->get_site_id()));
+        $this->baskets[$this->type] = $this->get()->add_product($order_base_product_item);
         return $this->save();
     }
-
     /**
      * Deletes a product item from the basket.
      *
      * @param int $position Position number (key) of the order product item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteProduct(int $position): Iface
+    public function delete_product(int $position): Iface
     {
-        $product = $this->get()->getProduct($position);
-
-        if ($product->getFlags() === \Aimeos\MShop\Order\Item\Product\Base::FLAG_IMMUTABLE) {
+        $product = $this->get()->get_product($position);
+        if ($product->get_flags() === \Aimeos\M_Shop\Order\Item\Product\Base::FLAG_IMMUTABLE) {
             $msg = $this->context()->translate('controller/frontend', 'Basket item at position "%1$d" cannot be deleted manually');
             throw new \Aimeos\Controller\Frontend\Basket\Exception(sprintf($msg, $position), 403);
         }
-
-        $this->baskets[$this->type] = $this->get()->deleteProduct($position);
+        $this->baskets[$this->type] = $this->get()->delete_product($position);
         return $this->save();
     }
-
     /**
      * Edits the quantity of a product item in the basket.
      *
@@ -381,28 +323,23 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @param float $quantity New quantiy of the product item
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function updateProduct(int $position, float $quantity): Iface
+    public function update_product(int $position, float $quantity): Iface
     {
         $context = $this->context();
-        $orderProduct = $this->get()->getProduct($position);
-
-        if ($orderProduct->getFlags() & \Aimeos\MShop\Order\Item\Product\Base::FLAG_IMMUTABLE) {
+        $order_product = $this->get()->get_product($position);
+        if ($order_product->get_flags() & \Aimeos\M_Shop\Order\Item\Product\Base::FLAG_IMMUTABLE) {
             $msg = $context->translate('controller/frontend', 'Basket item at position "%1$d" cannot be changed');
             throw new \Aimeos\Controller\Frontend\Basket\Exception(sprintf($msg, $position), 403);
         }
-
-        $manager = \Aimeos\MShop::create($context, 'product');
-        $product = $manager->get($orderProduct->getProductId(), ['attribute', 'catalog', 'price', 'text'], true);
-        $product = \Aimeos\MShop::create($context, 'rule')->apply($product, 'catalog');
-
+        $manager = \Aimeos\M_Shop::create($context, 'product');
+        $product = $manager->get($order_product->get_product_id(), ['attribute', 'catalog', 'price', 'text'], true);
+        $product = \Aimeos\M_Shop::create($context, 'rule')->apply($product, 'catalog');
         $quantity = $this->call('checkQuantity', $product, $quantity);
-        $price = $this->call('calcPrice', $orderProduct, $product->getRefItems('price', 'default', 'default'), $quantity);
-        $orderProduct = $orderProduct->setQuantity($quantity)->setPrice($price);
-
-        $this->baskets[$this->type] = $this->get()->addProduct($orderProduct, $position);
+        $price = $this->call('calcPrice', $order_product, $product->get_ref_items('price', 'default', 'default'), $quantity);
+        $order_product = $order_product->set_quantity($quantity)->set_price($price);
+        $this->baskets[$this->type] = $this->get()->add_product($order_product, $position);
         return $this->save();
     }
-
     /**
      * Adds the given coupon code and updates the basket.
      *
@@ -410,10 +347,9 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception if the coupon code is invalid or not allowed
      */
-    public function addCoupon(string $code): Iface
+    public function add_coupon(string $code): Iface
     {
         $context = $this->context();
-
         /** controller/frontend/basket/coupon/allowed
          * Number of coupon codes a customer is allowed to enter
          *
@@ -431,16 +367,13 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
          * @category Developer
          */
         $allowed = $context->config()->get('controller/frontend/basket/coupon/allowed', 1);
-
-        if ($allowed <= count($this->get()->getCoupons())) {
+        if ($allowed <= count($this->get()->get_coupons())) {
             $msg = $context->translate('controller/frontend', 'Number of coupon codes exceeds the limit');
             throw new \Aimeos\Controller\Frontend\Basket\Exception($msg, 409);
         }
-
-        $this->baskets[$this->type] = $this->get()->addCoupon($code);
+        $this->baskets[$this->type] = $this->get()->add_coupon($code);
         return $this->save();
     }
-
     /**
      * Removes the given coupon code and its effects from the basket.
      *
@@ -448,12 +381,11 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception if the coupon code is invalid
      */
-    public function deleteCoupon(string $code): Iface
+    public function delete_coupon(string $code): Iface
     {
-        $this->baskets[$this->type] = $this->get()->deleteCoupon($code);
+        $this->baskets[$this->type] = $this->get()->delete_coupon($code);
         return $this->save();
     }
-
     /**
      * Adds an address of the customer to the basket
      *
@@ -462,22 +394,20 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @param int|null $position Position number (key) of the order address item to replace
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function addAddress(string $type, array $values = [], ?int $position = null): Iface
+    public function add_address(string $type, array $values = [], ?int $position = null): Iface
     {
         foreach ($values as $key => $value) {
             if (is_scalar($value)) {
-                $values[$key] = trim(strip_tags((string) $value)); // prevent XSS
+                $values[$key] = trim(strip_tags((string) $value));
+                // prevent XSS
             }
         }
-
         $context = $this->context();
-        $address = \Aimeos\MShop::create($context, 'order')->createAddress()->fromArray($values);
-        $address->set('nostore', ($values['nostore'] ?? false) ? true : false);
-
-        $this->baskets[$this->type] = $this->get()->addAddress($address, $type, $position);
+        $address = \Aimeos\M_Shop::create($context, 'order')->create_address()->from_array($values);
+        $address->set('nostore', $values['nostore'] ?? false ? true : false);
+        $this->baskets[$this->type] = $this->get()->add_address($address, $type, $position);
         return $this->save();
     }
-
     /**
      * Removes the address of the given type and position if available
      *
@@ -485,12 +415,11 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @param int|null $position Position of the address in the list to remove
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteAddress(string $type, ?int $position = null): Iface
+    public function delete_address(string $type, ?int $position = null): Iface
     {
-        $this->baskets[$this->type] = $this->get()->deleteAddress($type, $position);
+        $this->baskets[$this->type] = $this->get()->delete_address($type, $position);
         return $this->save();
     }
-
     /**
      * Adds the delivery/payment service including the given configuration
      *
@@ -500,48 +429,37 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      * @throws \Aimeos\Controller\Frontend\Basket\Exception If given service attributes are invalid
      */
-    public function addService(\Aimeos\MShop\Service\Item\Iface $service, array $config = [], ?int $position = null): Iface
+    public function add_service(\Aimeos\M_Shop\Service\Item\Iface $service, array $config = [], ?int $position = null): Iface
     {
         $basket = $this->get();
         $context = $this->context();
-
-        $type = $service->getType();
-        $code = $service->getCode();
-
-        foreach ($basket->getService($type) as $pos => $ordService) {
-            if (!$position && $ordService->getCode() === $code) {
+        $type = $service->get_type();
+        $code = $service->get_code();
+        foreach ($basket->get_service($type) as $pos => $ord_service) {
+            if (!$position && $ord_service->get_code() === $code) {
                 $position = $pos;
             }
         }
-
-        $manager = \Aimeos\MShop::create($context, 'service');
-        $provider = $manager->getProvider($service, $type);
-
-        $errors = $provider->checkConfigFE($config);
+        $manager = \Aimeos\M_Shop::create($context, 'service');
+        $provider = $manager->get_provider($service, $type);
+        $errors = $provider->check_config_fe($config);
         $unknown = array_diff_key($config, $errors);
-
         if (count($unknown) > 0) {
             $msg = $context->translate('controller/frontend', 'Unknown service attributes');
             throw new \Aimeos\Controller\Frontend\Basket\Exception($msg, 400, null, $unknown);
         }
-
         if (count(array_filter($errors)) > 0) {
             $msg = $context->translate('controller/frontend', 'Invalid service attributes');
             throw new \Aimeos\Controller\Frontend\Basket\Exception($msg, 400, null, array_filter($errors));
         }
-
         // remove service rebate of original price
-        $price = $provider->calcPrice($this->get(), $config)->setRebate('0.00');
-
-        $orderManager = \Aimeos\MShop::create($context, 'order');
-
-        $orderServiceItem = $orderManager->createService()->copyFrom($service)->setPrice($price);
-        $orderServiceItem = $provider->setConfigFE($orderServiceItem, $config);
-
-        $this->baskets[$this->type] = $basket->addService($orderServiceItem, $type, $position);
+        $price = $provider->calc_price($this->get(), $config)->set_rebate('0.00');
+        $order_manager = \Aimeos\M_Shop::create($context, 'order');
+        $order_service_item = $order_manager->create_service()->copy_from($service)->set_price($price);
+        $order_service_item = $provider->set_config_fe($order_service_item, $config);
+        $this->baskets[$this->type] = $basket->add_service($order_service_item, $type, $position);
         return $this->save();
     }
-
     /**
      * Removes the delivery or payment service items from the basket
      *
@@ -549,18 +467,17 @@ class Standard extends Base implements Iface, \Aimeos\Controller\Frontend\Common
      * @param int|null $position Position of the service in the list to remove
      * @return \Aimeos\Controller\Frontend\Basket\Iface Basket frontend object for fluent interface
      */
-    public function deleteService(string $type, ?int $position = null): Iface
+    public function delete_service(string $type, ?int $position = null): Iface
     {
-        $this->baskets[$this->type] = $this->get()->deleteService($type, $position);
+        $this->baskets[$this->type] = $this->get()->delete_service($type, $position);
         return $this->save();
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

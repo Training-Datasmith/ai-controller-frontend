@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Attribute\Decorator;
 
 /**
@@ -20,18 +18,16 @@ namespace Aimeos\Controller\Frontend\Attribute\Decorator;
 abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\Controller\Frontend\Common\Decorator\Iface, \Aimeos\Controller\Frontend\Attribute\Iface
 {
     use \Aimeos\Controller\Frontend\Common\Decorator\Traits;
-
     /**
      * Initializes the controller decorator.
      *
      * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
      * @param \Aimeos\MShop\ContextIface $context Context object with required objects
      */
-    public function __construct(private \Aimeos\Controller\Frontend\Attribute\Iface $controller, \Aimeos\MShop\ContextIface $context)
+    public function __construct(private \Aimeos\Controller\Frontend\Attribute\Iface $controller, \Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
     }
-
     /**
      * Passes unknown methods to wrapped objects.
      *
@@ -42,9 +38,8 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      */
     public function __call(string $name, array $param)
     {
-        return @call_user_func_array([ $this->controller, $name ], $param);
+        return @call_user_func_array([$this->controller, $name], $param);
     }
-
     /**
      * Clones objects in controller and resets values
      */
@@ -52,7 +47,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         $this->controller = clone $this->controller;
     }
-
     /**
      * Adds attribute IDs for filtering
      *
@@ -60,12 +54,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function attribute($attrIds): \Aimeos\Controller\Frontend\Attribute\Iface
+    public function attribute($attr_ids): \Aimeos\Controller\Frontend\Attribute\Iface
     {
-        $this->controller->attribute($attrIds);
+        $this->controller->attribute($attr_ids);
         return $this;
     }
-
     /**
      * Adds generic condition for filtering attributes
      *
@@ -80,7 +73,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->compare($operator, $key, $value);
         return $this;
     }
-
     /**
      * Adds the domain of the attributes for filtering
      *
@@ -93,7 +85,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->domain($domain);
         return $this;
     }
-
     /**
      * Returns the attribute for the given attribute code
      *
@@ -102,11 +93,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Attribute\Item\Iface Attribute item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code, string $type): \Aimeos\MShop\Attribute\Item\Iface
+    public function find(string $code, string $type): \Aimeos\M_Shop\Attribute\Item\Iface
     {
         return $this->controller->find($code, $type);
     }
-
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -118,7 +108,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->function($name, $params);
     }
-
     /**
      * Returns the attribute for the given attribute ID
      *
@@ -126,11 +115,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Attribute\Item\Iface Attribute item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Attribute\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Attribute\Item\Iface
     {
         return $this->controller->get($id);
     }
-
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -140,12 +128,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): \Aimeos\Controller\Frontend\Attribute\Iface
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): \Aimeos\Controller\Frontend\Attribute\Iface
     {
-        $this->controller->has($domain, $type, $refId);
+        $this->controller->has($domain, $type, $ref_id);
         return $this;
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -158,7 +145,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->parse($conditions);
         return $this;
     }
-
     /**
      * Adds a filter to return only items containing the property
      *
@@ -168,12 +154,11 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function property(string $type, ?string $value = null, ?string $langId = null): \Aimeos\Controller\Frontend\Attribute\Iface
+    public function property(string $type, ?string $value = null, ?string $lang_id = null): \Aimeos\Controller\Frontend\Attribute\Iface
     {
-        $this->controller->property($type, $value, $langId);
+        $this->controller->property($type, $value, $lang_id);
         return $this;
     }
-
     /**
      * Returns the attributes filtered by the previously assigned conditions
      *
@@ -185,7 +170,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->search($total);
     }
-
     /**
      * Sets the start value and the number of returned attributes for slicing the list of found attributes
      *
@@ -199,7 +183,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->slice($start, $limit);
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -212,7 +195,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->sort($key);
         return $this;
     }
-
     /**
      * Adds attribute types for filtering
      *
@@ -225,7 +207,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->type($codes);
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -238,28 +219,24 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->uses($domains);
         return $this;
     }
-
     /**
      * Injects the reference of the outmost object
      *
      * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function setObject(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
+    public function set_object(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
     {
-        parent::setObject($object);
-
-        $this->controller->setObject($object);
-
+        parent::set_object($object);
+        $this->controller->set_object($object);
         return $this;
     }
-
     /**
      * Returns the frontend controller
      *
      * @return \Aimeos\Controller\Frontend\Iface Frontend controller object
      */
-    protected function getController(): \Aimeos\Controller\Frontend\Iface
+    protected function get_controller(): \Aimeos\Controller\Frontend\Iface
     {
         return $this->controller;
     }

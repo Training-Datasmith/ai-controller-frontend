@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2020-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Review\Decorator;
 
 /**
@@ -20,18 +18,16 @@ namespace Aimeos\Controller\Frontend\Review\Decorator;
 abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\Controller\Frontend\Common\Decorator\Iface, \Aimeos\Controller\Frontend\Review\Iface
 {
     use \Aimeos\Controller\Frontend\Common\Decorator\Traits;
-
     /**
      * Initializes the controller decorator.
      *
      * @param \Aimeos\Controller\Frontend\Iface $controller Controller object
      * @param \Aimeos\MShop\ContextIface $context Context object with required objects
      */
-    public function __construct(private \Aimeos\Controller\Frontend\Review\Iface $controller, \Aimeos\MShop\ContextIface $context)
+    public function __construct(private \Aimeos\Controller\Frontend\Review\Iface $controller, \Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
     }
-
     /**
      * Passes unknown methods to wrapped objects.
      *
@@ -42,9 +38,8 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      */
     public function __call(string $name, array $param)
     {
-        return @call_user_func_array([ $this->controller, $name ], $param);
+        return @call_user_func_array([$this->controller, $name], $param);
     }
-
     /**
      * Clones objects in controller and resets values
      */
@@ -52,7 +47,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         $this->controller = clone $this->controller;
     }
-
     /**
      * Returns the aggregated count of products for the given key.
      *
@@ -66,7 +60,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->aggregate($key, $value, $type);
     }
-
     /**
      * Adds generic condition for filtering
      *
@@ -81,18 +74,16 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->compare($operator, $key, $value);
         return $this;
     }
-
     /**
      * Returns a new rating item
      *
      * @param array $values Associative list of key/value pairs to initialize the item
      * @return \Aimeos\MShop\Review\Item\Iface New review item
      */
-    public function create(array $values = []): \Aimeos\MShop\Review\Item\Iface
+    public function create(array $values = []): \Aimeos\M_Shop\Review\Item\Iface
     {
         return $this->controller->create($values);
     }
-
     /**
      * Deletes the review item for the given ID
      *
@@ -105,7 +96,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->delete($ids);
         return $this;
     }
-
     /**
      * Sets the review domain for filtering
      *
@@ -118,7 +108,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->domain($domain);
         return $this;
     }
-
     /**
      * Restricts the reviews to a specific domain item
      *
@@ -132,7 +121,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->for($domain, $refid);
         return $this;
     }
-
     /**
      * Returns the review for the given review ID
      *
@@ -140,11 +128,10 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
      * @return \Aimeos\MShop\Review\Item\Iface Review item including the referenced domains items
      * @since 2020.10
      */
-    public function get(string $id): \Aimeos\MShop\Review\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Review\Item\Iface
     {
         return $this->controller->get($id);
     }
-
     /**
      * Returns the reviews for the logged-in user
      *
@@ -156,7 +143,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->list($total);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -169,18 +155,16 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->parse($conditions);
         return $this;
     }
-
     /**
      * Saves the modified review item
      *
      * @param \Aimeos\MShop\Review\Item\Iface $item Review object
      * @return \Aimeos\MShop\Review\Item\Iface Saved review item
      */
-    public function save(\Aimeos\MShop\Review\Item\Iface $item): \Aimeos\MShop\Review\Item\Iface
+    public function save(\Aimeos\M_Shop\Review\Item\Iface $item): \Aimeos\M_Shop\Review\Item\Iface
     {
         return $this->controller->save($item);
     }
-
     /**
      * Returns the reviews filtered by the previously assigned conditions
      *
@@ -192,7 +176,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
     {
         return $this->controller->search($total);
     }
-
     /**
      * Sets the start value and the number of returned review items for slicing the list of found review items
      *
@@ -206,7 +189,6 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->slice($start, $limit);
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -219,28 +201,24 @@ abstract class Base extends \Aimeos\Controller\Frontend\Base implements \Aimeos\
         $this->controller->sort($key);
         return $this;
     }
-
     /**
      * Injects the reference of the outmost object
      *
      * @param \Aimeos\Controller\Frontend\Iface $object Reference to the outmost controller or decorator
      * @return \Aimeos\Controller\Frontend\Iface Controller object for chaining method calls
      */
-    public function setObject(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
+    public function set_object(\Aimeos\Controller\Frontend\Iface $object): \Aimeos\Controller\Frontend\Iface
     {
-        parent::setObject($object);
-
-        $this->controller->setObject($object);
-
+        parent::set_object($object);
+        $this->controller->set_object($object);
         return $this;
     }
-
     /**
      * Returns the frontend controller
      *
      * @return \Aimeos\Controller\Frontend\Iface Frontend controller object
      */
-    protected function getController(): \Aimeos\Controller\Frontend\Iface
+    protected function get_controller(): \Aimeos\Controller\Frontend\Iface
     {
         return $this->controller;
     }

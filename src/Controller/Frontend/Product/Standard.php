@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Product;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2017.03
      * @category Developer
      */
-
     /** controller/frontend/product/decorators/excludes
      * Excludes decorators added by the "common" option from the product frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/product/decorators/global
      * @see controller/frontend/product/decorators/local
      */
-
     /** controller/frontend/product/decorators/global
      * Adds a list of globally available decorators only to the product frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/product/decorators/excludes
      * @see controller/frontend/product/decorators/local
      */
-
     /** controller/frontend/product/decorators/local
      * Adds a list of local decorators only to the product frontend controllers
      *
@@ -127,23 +122,19 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/product/decorators/excludes
      * @see controller/frontend/product/decorators/global
      */
-
     private array $domains = [];
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'index');
+        $this->manager = \Aimeos\M_Shop::create($context, 'index');
         $this->filter = $this->manager->filter(true);
-
         /** controller/frontend/product/show-all
          * Require products to be assigned to categories
          *
@@ -159,10 +150,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
          * @since 2010.10
          */
         if ($context->config()->get('controller/frontend/product/show-all', false) == false) {
-            $this->addExpression($this->filter->compare('!=', 'index.catalog.id', null));
+            $this->add_expression($this->filter->compare('!=', 'index.catalog.id', null));
         }
     }
-
     /**
      * Clones objects in controller
      */
@@ -171,7 +161,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Returns the aggregated count of products for the given key.
      *
@@ -184,11 +173,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function aggregate(string $key, ?string $value = null, ?string $type = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-        $filter->add($filter->and($this->getConditions()));
-
+        $filter->add($filter->and($this->get_conditions()));
         return $this->manager->aggregate($filter, $key, $value, $type);
     }
-
     /**
      * Adds attribute IDs for filtering where products must reference all IDs
      *
@@ -196,16 +183,14 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function allOf($attrIds): Iface
+    public function all_of($attr_ids): Iface
     {
-        if (!empty($attrIds) && ($ids = $this->validateIds((array) $attrIds)) !== []) {
+        if (!empty($attr_ids) && ($ids = $this->validate_ids((array) $attr_ids)) !== []) {
             $func = $this->filter->make('index.attribute:allof', [$ids]);
-            $this->addExpression($this->filter->compare('!=', $func, null));
+            $this->add_expression($this->filter->compare('!=', $func, null));
         }
-
         return $this;
     }
-
     /**
      * Adds catalog IDs for filtering
      *
@@ -215,33 +200,27 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function category($catIds, string $listtype = 'default', int $level = \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE): Iface
+    public function category($cat_ids, string $listtype = 'default', int $level = \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE): Iface
     {
-        if (!empty($catIds) && ($ids = $this->validateIds((array) $catIds)) !== []) {
+        if (!empty($cat_ids) && ($ids = $this->validate_ids((array) $cat_ids)) !== []) {
             if ($level != \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE) {
                 $list = map();
-                $manager = \Aimeos\MShop::create($this->context(), 'catalog');
-
-                foreach ($ids as $catId) {
-                    $list->union($manager->getTree($catId, [], $level)->toList());
+                $manager = \Aimeos\M_Shop::create($this->context(), 'catalog');
+                foreach ($ids as $cat_id) {
+                    $list->union($manager->get_tree($cat_id, [], $level)->to_list());
                 }
-
-                $ids = $this->validateIds($list->keys()->toArray());
+                $ids = $this->validate_ids($list->keys()->to_array());
             }
-
             $func = $this->filter->make('index.catalog:position', [$listtype, $ids]);
-
-            $this->addExpression($this->filter->compare('==', 'index.catalog.id', $ids));
-            $this->addExpression($this->filter->compare('>=', $func, 0));
-
+            $this->add_expression($this->filter->compare('==', 'index.catalog.id', $ids));
+            $this->add_expression($this->filter->compare('>=', $func, 0));
             $func = $this->filter->make('sort:index.catalog:position', [$listtype, $ids]);
-            $this->addExpression($this->filter->sort('+', $func));
-            $this->addExpression($this->filter->sort('+', 'product.id')); // prevent flaky order if products have same position
+            $this->add_expression($this->filter->sort('+', $func));
+            $this->add_expression($this->filter->sort('+', 'product.id'));
+            // prevent flaky order if products have same position
         }
-
         return $this;
     }
-
     /**
      * Adds generic condition for filtering products
      *
@@ -253,10 +232,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns the product for the given product code
      *
@@ -264,12 +242,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Product\Item\Iface Product item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Product\Item\Iface
+    public function find(string $code): \Aimeos\M_Shop\Product\Item\Iface
     {
         $item = $this->manager->find($code, $this->domains, 'product', null, null);
-        return \Aimeos\MShop::create($this->context(), 'rule')->apply($item, 'catalog');
+        return \Aimeos\M_Shop::create($this->context(), 'rule')->apply($item, 'catalog');
     }
-
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -281,7 +258,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         return $this->filter->make($name, $params);
     }
-
     /**
      * Returns the product for the given product ID
      *
@@ -289,12 +265,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Product\Item\Iface Product item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Product\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Product\Item\Iface
     {
         $item = $this->manager->get($id, $this->domains, null);
-        return \Aimeos\MShop::create($this->context(), 'rule')->apply($item, 'catalog');
+        return \Aimeos\M_Shop::create($this->context(), 'rule')->apply($item, 'catalog');
     }
-
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -304,17 +279,15 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface
     {
         $params = [$domain];
         !$type ?: $params[] = $type;
-        !$refId ?: $params[] = $refId;
-
+        !$ref_id ?: $params[] = $ref_id;
         $func = $this->filter->make('product:has', $params);
-        $this->addExpression($this->filter->compare('!=', $func, null));
+        $this->add_expression($this->filter->compare('!=', $func, null));
         return $this;
     }
-
     /**
      * Adds attribute IDs for filtering where products must reference at least one ID
      *
@@ -324,26 +297,22 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function oneOf($attrIds): Iface
+    public function one_of($attr_ids): Iface
     {
-        $attrIds = (array) $attrIds;
-
-        foreach ($attrIds as $key => $entry) {
-            if (is_array($entry) && ($ids = $this->validateIds($entry)) !== []) {
+        $attr_ids = (array) $attr_ids;
+        foreach ($attr_ids as $key => $entry) {
+            if (is_array($entry) && ($ids = $this->validate_ids($entry)) !== []) {
                 $func = $this->filter->make('index.attribute:oneof', [$ids]);
-                $this->addExpression($this->filter->compare('!=', $func, null));
-                unset($attrIds[$key]);
+                $this->add_expression($this->filter->compare('!=', $func, null));
+                unset($attr_ids[$key]);
             }
         }
-
-        if (($ids = $this->validateIds($attrIds)) !== []) {
+        if (($ids = $this->validate_ids($attr_ids)) !== []) {
             $func = $this->filter->make('index.attribute:oneof', [$ids]);
-            $this->addExpression($this->filter->compare('!=', $func, null));
+            $this->add_expression($this->filter->compare('!=', $func, null));
         }
-
         return $this;
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -354,12 +323,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Adds price restrictions for filtering
      *
@@ -370,21 +337,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function price($value = null): Iface
     {
         if ($value) {
-            $func = $this->filter->make('index.price:value', [$this->context()->locale()->getCurrencyId()]);
+            $func = $this->filter->make('index.price:value', [$this->context()->locale()->get_currency_id()]);
             $prec = (int) $this->context()->config()->get('mshop/price/precision', 2);
             $format = '%0' . ($prec > 0 ? 13 : 12) . '.' . $prec . 'F';
             $value = (array) $value;
-
-            $this->addExpression($this->filter->compare('<=', $func, sprintf($format, end($value))));
-
+            $this->add_expression($this->filter->compare('<=', $func, sprintf($format, end($value))));
             if (count($value) > 1) {
-                $this->addExpression($this->filter->compare('>=', $func, sprintf($format, reset($value))));
+                $this->add_expression($this->filter->compare('>=', $func, sprintf($format, reset($value))));
             }
         }
-
         return $this;
     }
-
     /**
      * Adds product IDs for filtering
      *
@@ -392,15 +355,13 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function product($prodIds): Iface
+    public function product($prod_ids): Iface
     {
-        if (!empty($prodIds) && ($ids = array_unique($this->validateIds((array) $prodIds))) !== []) {
-            $this->addExpression($this->filter->compare('==', 'product.id', $ids));
+        if (!empty($prod_ids) && ($ids = array_unique($this->validate_ids((array) $prod_ids))) !== []) {
+            $this->add_expression($this->filter->compare('==', 'product.id', $ids));
         }
-
         return $this;
     }
-
     /**
      * Adds a filter to return only items containing the property
      *
@@ -413,10 +374,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function property(string $type, ?string $value = null, ?string $langid = null): Iface
     {
         $func = $this->filter->make('product:prop', [$type, $langid, $value]);
-        $this->addExpression($this->filter->compare('!=', $func, null));
+        $this->add_expression($this->filter->compare('!=', $func, null));
         return $this;
     }
-
     /**
      * Adds radius restrictions for filtering
      *
@@ -429,12 +389,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         if ($dist && count($latlon) === 2) {
             $func = $this->filter->make('index.supplier:radius', [reset($latlon), end($latlon), $dist]);
-            $this->addExpression($this->filter->compare('!=', $func, null));
+            $this->add_expression($this->filter->compare('!=', $func, null));
         }
-
         return $this;
     }
-
     /**
      * Returns the product for the given product URL name
      *
@@ -442,20 +400,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Product\Item\Iface Product item including the referenced domains items
      * @since 2019.04
      */
-    public function resolve(string $name): \Aimeos\MShop\Product\Item\Iface
+    public function resolve(string $name): \Aimeos\M_Shop\Product\Item\Iface
     {
         $search = $this->manager->filter(null);
-        $func = $search->make('index.text:url', [$this->context()->locale()->getLanguageId()]);
+        $func = $search->make('index.text:url', [$this->context()->locale()->get_language_id()]);
         $search->add($func, '==', $name)->slice(0, 1);
-
         if (($item = $this->manager->search($search, $this->domains)->first()) === null) {
             $msg = $this->context()->translate('controller/frontend', 'Unable to find product "%1$s"');
             throw new \Aimeos\Controller\Frontend\Product\Exception(sprintf($msg, $name), 404);
         }
-
-        return \Aimeos\MShop::create($this->context(), 'rule')->apply($item, 'catalog');
+        return \Aimeos\M_Shop::create($this->context(), 'rule')->apply($item, 'catalog');
     }
-
     /**
      * Returns the products filtered by the previously assigned conditions
      *
@@ -466,7 +421,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
         /** controller/frontend/common/max-size
          * Maximum number of items that can be fetched at once
          *
@@ -477,15 +431,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
          * @param int Number of items
          */
         $maxsize = $this->context()->config()->get('controller/frontend/common/max-size', 500);
-        $filter->slice($filter->getOffset(), min($filter->getLimit(), $maxsize));
-
-        $filter->setSortations($this->getSortations());
-        $filter->add($filter->and($this->getConditions()));
-
+        $filter->slice($filter->get_offset(), min($filter->get_limit(), $maxsize));
+        $filter->set_sortations($this->get_sortations());
+        $filter->add($filter->and($this->get_conditions()));
         $items = $this->manager->search($filter, $this->domains, $total);
-        return \Aimeos\MShop::create($this->context(), 'rule')->apply($items, 'catalog');
+        return \Aimeos\M_Shop::create($this->context(), 'rule')->apply($items, 'catalog');
     }
-
     /**
      * Sets the start value and the number of returned products for slicing the list of found products
      *
@@ -499,7 +450,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, $limit);
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -510,60 +460,45 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             switch ($sortkey) {
                 case 'relevance':
                     break;
-
                 case 'code':
-                    $this->addExpression($this->filter->sort($direction, 'product.code'));
+                    $this->add_expression($this->filter->sort($direction, 'product.code'));
                     break;
-
                 case 'ctime':
-                    $this->addExpression($this->filter->sort($direction, 'product.ctime'));
+                    $this->add_expression($this->filter->sort($direction, 'product.ctime'));
                     break;
-
                 case 'name':
-                    $langid = $this->context()->locale()->getLanguageId();
-
+                    $langid = $this->context()->locale()->get_language_id();
                     $cmpfunc = $this->filter->make('index.text:name', [$langid]);
-                    $this->addExpression($this->filter->compare('!=', $cmpfunc, null));
-
+                    $this->add_expression($this->filter->compare('!=', $cmpfunc, null));
                     $sortfunc = $this->filter->make('sort:index.text:name', [$langid]);
-                    $this->addExpression($this->filter->sort($direction, $sortfunc));
+                    $this->add_expression($this->filter->sort($direction, $sortfunc));
                     break;
-
                 case 'price':
-                    $currencyid = $this->context()->locale()->getCurrencyId();
+                    $currencyid = $this->context()->locale()->get_currency_id();
                     $sortfunc = $this->filter->make('sort:index.price:value', [$currencyid]);
-
                     $cmpfunc = $this->filter->make('index.price:value', [$currencyid]);
-                    $this->addExpression($this->filter->compare('!=', $cmpfunc, null));
-
-                    $this->addExpression($this->filter->sort($direction, $sortfunc));
+                    $this->add_expression($this->filter->compare('!=', $cmpfunc, null));
+                    $this->add_expression($this->filter->sort($direction, $sortfunc));
                     break;
-
                 case 'rating':
-                    $this->addExpression($this->filter->sort($direction, 'product.rating'));
+                    $this->add_expression($this->filter->sort($direction, 'product.rating'));
                     break;
-
                 case 'start':
-                    $this->addExpression($this->filter->sort($direction, 'product.datestart'));
+                    $this->add_expression($this->filter->sort($direction, 'product.datestart'));
                     break;
-
                 default:
-                    $this->addExpression($this->filter->sort($direction, $sortkey));
+                    $this->add_expression($this->filter->sort($direction, $sortkey));
             }
         }
-
         return $this;
     }
-
     /**
      * Adds supplier IDs for filtering
      *
@@ -572,21 +507,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function supplier($supIds, string $listtype = 'default'): Iface
+    public function supplier($sup_ids, string $listtype = 'default'): Iface
     {
-        if (!empty($supIds) && ($ids = array_unique($this->validateIds((array) $supIds))) !== []) {
+        if (!empty($sup_ids) && ($ids = array_unique($this->validate_ids((array) $sup_ids))) !== []) {
             $func = $this->filter->make('index.supplier:position', [$listtype, $ids]);
-
-            $this->addExpression($this->filter->compare('==', 'index.supplier.id', $ids));
-            $this->addExpression($this->filter->compare('!=', $func, null));
-
+            $this->add_expression($this->filter->compare('==', 'index.supplier.id', $ids));
+            $this->add_expression($this->filter->compare('!=', $func, null));
             $func = $this->filter->make('sort:index.supplier:position', [$listtype, $ids]);
-            $this->addExpression($this->filter->sort('+', $func));
+            $this->add_expression($this->filter->sort('+', $func));
         }
-
         return $this;
     }
-
     /**
      * Adds input string for full text search
      *
@@ -597,20 +528,14 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function text(?string $text = null): Iface
     {
         if (!empty($text)) {
-            $langid = $this->context()->locale()->getLanguageId();
+            $langid = $this->context()->locale()->get_language_id();
             $func = $this->filter->make('index.text:relevance', [$langid, $text]);
             $sortfunc = $this->filter->make('sort:index.text:relevance', [$langid, $text]);
-
-            $this->addExpression($this->filter->or([
-                $this->filter->compare('>', $func, 0),
-                $this->filter->compare('=~', 'product.code', $text),
-            ]));
-            $this->addExpression($this->filter->sort('-', $sortfunc));
+            $this->add_expression($this->filter->or([$this->filter->compare('>', $func, 0), $this->filter->compare('=~', 'product.code', $text)]));
+            $this->add_expression($this->filter->sort('-', $sortfunc));
         }
-
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -623,56 +548,48 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Returns the list of catalog IDs for the given catalog tree
      *
      * @param \Aimeos\MShop\Catalog\Item\Iface $item Catalog item with children
      * @return array List of catalog IDs
      */
-    protected function getCatalogIdsFromTree(\Aimeos\MShop\Catalog\Item\Iface $item): array
+    protected function get_catalog_ids_from_tree(\Aimeos\M_Shop\Catalog\Item\Iface $item): array
     {
-        if ($item->getStatus() < 1) {
+        if ($item->get_status() < 1) {
             return [];
         }
-
-        $list = [$item->getId()];
-
-        foreach ($item->getChildren() as $child) {
-            $list = array_merge($list, $this->getCatalogIdsFromTree($child));
+        $list = [$item->get_id()];
+        foreach ($item->get_children() as $child) {
+            $list = array_merge($list, $this->get_catalog_ids_from_tree($child));
         }
-
         return $list;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }
-
     /**
      * Validates the given IDs as integers
      *
      * @param array $ids List of IDs to validate
      * @return array List of validated IDs
      */
-    protected function validateIds(array $ids): array
+    protected function validate_ids(array $ids): array
     {
         $list = [];
-
         foreach ($ids as $id) {
             if (is_array($id)) {
-                $list[] = $this->validateIds($id);
+                $list[] = $this->validate_ids($id);
             } elseif ($id != '' && preg_match('/^[A-Za-z0-9\-\_]+$/', $id) === 1) {
                 $list[] = (string) $id;
             }
         }
-
         return $list;
     }
 }

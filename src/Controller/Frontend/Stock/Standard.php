@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Stock;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2017.03
      * @category Developer
      */
-
     /** controller/frontend/stock/decorators/excludes
      * Excludes decorators added by the "common" option from the stock frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/stock/decorators/global
      * @see controller/frontend/stock/decorators/local
      */
-
     /** controller/frontend/stock/decorators/global
      * Adds a list of globally available decorators only to the stock frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/stock/decorators/excludes
      * @see controller/frontend/stock/decorators/local
      */
-
     /** controller/frontend/stock/decorators/local
      * Adds a list of local decorators only to the stock frontend controllers
      *
@@ -127,24 +122,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/stock/decorators/excludes
      * @see controller/frontend/stock/decorators/global
      */
-
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     private \Aimeos\Base\Criteria\Iface $filter;
     private array $domains = [];
-
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'stock');
+        $this->manager = \Aimeos\M_Shop::create($context, 'stock');
         $this->filter = $this->manager->filter(true);
     }
-
     /**
      * Clones objects in controller
      */
@@ -153,7 +144,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Adds the IDs of the products for filtering
      *
@@ -164,12 +154,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function product($ids): Iface
     {
         if (!empty($ids)) {
-            $this->addExpression($this->filter->compare('==', 'stock.productid', $ids));
+            $this->add_expression($this->filter->compare('==', 'stock.productid', $ids));
         }
-
         return $this;
     }
-
     /**
      * Adds generic condition for filtering
      *
@@ -181,10 +169,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns the stock item for the given stock ID
      *
@@ -192,11 +179,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Stock\Item\Iface Stock item
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Stock\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Stock\Item\Iface
     {
         return $this->manager->get($id, $this->domains, null);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -207,12 +193,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Returns the stock items filtered by the previously assigned conditions
      *
@@ -223,15 +207,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
-        $this->addExpression($filter->getConditions());
-
-        $filter->setSortations($this->getSortations());
-        $filter->add($filter->and($this->getConditions()));
-
+        $this->add_expression($filter->get_conditions());
+        $filter->set_sortations($this->get_sortations());
+        $filter->add($filter->and($this->get_conditions()));
         return $this->manager->search($filter, $this->domains, $total);
     }
-
     /**
      * Sets the start value and the number of returned stock items for slicing the list of found stock items
      *
@@ -246,7 +226,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -256,25 +235,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             switch ($sortkey) {
                 case 'stock':
-                    $this->addExpression($this->filter->sort($direction, 'stock.type'));
-                    $this->addExpression($this->filter->sort($direction, 'stock.stocklevel'));
+                    $this->add_expression($this->filter->sort($direction, 'stock.type'));
+                    $this->add_expression($this->filter->sort($direction, 'stock.stocklevel'));
                     break;
                 default:
-                    $this->addExpression($this->filter->sort($direction, $sortkey));
+                    $this->add_expression($this->filter->sort($direction, $sortkey));
             }
         }
-
         return $this;
     }
-
     /**
      * Adds stock types for filtering
      *
@@ -285,12 +260,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function type($types): Iface
     {
         if (!empty($types)) {
-            $this->addExpression($this->filter->compare('==', 'stock.type', $types));
+            $this->add_expression($this->filter->compare('==', 'stock.type', $types));
         }
-
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -303,13 +276,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

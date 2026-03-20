@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Attribute;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/attribute/decorators/excludes
      * Excludes decorators added by the "common" option from the attribute frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/attribute/decorators/global
      * @see controller/frontend/attribute/decorators/local
      */
-
     /** controller/frontend/attribute/decorators/global
      * Adds a list of globally available decorators only to the attribute frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/attribute/decorators/excludes
      * @see controller/frontend/attribute/decorators/local
      */
-
     /** controller/frontend/attribute/decorators/local
      * Adds a list of local decorators only to the attribute frontend controllers
      *
@@ -127,25 +122,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/attribute/decorators/excludes
      * @see controller/frontend/attribute/decorators/global
      */
-
     private array $domains = [];
     private string $domain = 'product';
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'attribute');
+        $this->manager = \Aimeos\M_Shop::create($context, 'attribute');
         $this->filter = $this->manager->filter(true);
     }
-
     /**
      * Clones objects in controller
      */
@@ -154,7 +145,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Adds attribute IDs for filtering
      *
@@ -162,15 +152,13 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function attribute($attrIds): Iface
+    public function attribute($attr_ids): Iface
     {
-        if (!empty($attrIds)) {
-            $this->addExpression($this->filter->compare('==', 'attribute.id', $attrIds));
+        if (!empty($attr_ids)) {
+            $this->add_expression($this->filter->compare('==', 'attribute.id', $attr_ids));
         }
-
         return $this;
     }
-
     /**
      * Adds generic condition for filtering attributes
      *
@@ -182,10 +170,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Adds the domain of the attributes for filtering
      *
@@ -198,7 +185,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domain = $domain;
         return $this;
     }
-
     /**
      * Returns the attribute for the given attribute code
      *
@@ -207,11 +193,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Attribute\Item\Iface Attribute item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code, string $type): \Aimeos\MShop\Attribute\Item\Iface
+    public function find(string $code, string $type): \Aimeos\M_Shop\Attribute\Item\Iface
     {
         return $this->manager->find($code, $this->domains, $this->domain, $type, null);
     }
-
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -223,7 +208,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         return $this->filter->make($name, $params);
     }
-
     /**
      * Returns the attribute for the given attribute ID
      *
@@ -231,11 +215,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Attribute\Item\Iface Attribute item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Attribute\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Attribute\Item\Iface
     {
         return $this->manager->get($id, $this->domains, null);
     }
-
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -245,17 +228,15 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface
     {
         $params = [$domain];
         !$type ?: $params[] = $type;
-        !$refId ?: $params[] = $refId;
-
+        !$ref_id ?: $params[] = $ref_id;
         $func = $this->filter->make('attribute:has', $params);
-        $this->addExpression($this->filter->compare('!=', $func, null));
+        $this->add_expression($this->filter->compare('!=', $func, null));
         return $this;
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -266,12 +247,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Adds a filter to return only items containing the property
      *
@@ -281,13 +260,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function property(string $type, ?string $value = null, ?string $langId = null): Iface
+    public function property(string $type, ?string $value = null, ?string $lang_id = null): Iface
     {
-        $func = $this->filter->make('attribute:prop', [$type, $langId, $value]);
-        $this->addExpression($this->filter->compare('!=', $func, null));
+        $func = $this->filter->make('attribute:prop', [$type, $lang_id, $value]);
+        $this->add_expression($this->filter->compare('!=', $func, null));
         return $this;
     }
-
     /**
      * Returns the attributes filtered by the previously assigned conditions
      *
@@ -298,16 +276,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
-        $this->addExpression($this->filter->compare('==', 'attribute.domain', $this->domain));
-        $this->addExpression($this->filter->getConditions());
-
-        $filter->add($this->filter->and($this->getConditions()));
-        $filter->setSortations($this->getSortations());
-
+        $this->add_expression($this->filter->compare('==', 'attribute.domain', $this->domain));
+        $this->add_expression($this->filter->get_conditions());
+        $filter->add($this->filter->and($this->get_conditions()));
+        $filter->set_sortations($this->get_sortations());
         return $this->manager->search($filter, $this->domains, $total);
     }
-
     /**
      * Sets the start value and the number of returned attributes for slicing the list of found attributes
      *
@@ -322,7 +296,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -332,25 +305,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             switch ($sortkey) {
                 case 'position':
-                    $this->addExpression($this->filter->sort($direction, 'attribute.type'));
-                    $this->addExpression($this->filter->sort($direction, 'attribute.position'));
+                    $this->add_expression($this->filter->sort($direction, 'attribute.type'));
+                    $this->add_expression($this->filter->sort($direction, 'attribute.position'));
                     break;
                 default:
-                    $this->addExpression($this->filter->sort($direction, $sortkey));
+                    $this->add_expression($this->filter->sort($direction, $sortkey));
             }
         }
-
         return $this;
     }
-
     /**
      * Adds attribute types for filtering
      *
@@ -361,12 +330,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function type($codes): Iface
     {
         if (!empty($codes)) {
-            $this->addExpression($this->filter->compare('==', 'attribute.type', $codes));
+            $this->add_expression($this->filter->compare('==', 'attribute.type', $codes));
         }
-
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -379,13 +346,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Attribute;
 
 /**
@@ -26,8 +24,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Attribute controller for fluent interface
      * @since 2019.04
      */
-    public function attribute($attrIds): Iface;
-
+    public function attribute($attr_ids): Iface;
     /**
      * Adds generic condition for filtering attributes
      *
@@ -38,7 +35,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Adds the domain of the attributes for filtering
      *
@@ -47,7 +43,6 @@ interface Iface
      * @since 2019.04
      */
     public function domain(string $domain): Iface;
-
     /**
      * Returns the attribute for the given attribute code
      *
@@ -56,8 +51,7 @@ interface Iface
      * @return \Aimeos\MShop\Attribute\Item\Iface Attribute item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code, string $type): \Aimeos\MShop\Attribute\Item\Iface;
-
+    public function find(string $code, string $type): \Aimeos\M_Shop\Attribute\Item\Iface;
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -66,7 +60,6 @@ interface Iface
      * @return string Search function string that can be used in compare()
      */
     public function function(string $name, array $params): string;
-
     /**
      * Returns the attribute for the given attribute ID
      *
@@ -74,8 +67,7 @@ interface Iface
      * @return \Aimeos\MShop\Attribute\Item\Iface Attribute item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Attribute\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Attribute\Item\Iface;
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -85,8 +77,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface;
-
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -95,7 +86,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Adds a filter to return only items containing the property
      *
@@ -105,8 +95,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Attribute\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function property(string $type, ?string $value = null, ?string $langId = null): Iface;
-
+    public function property(string $type, ?string $value = null, ?string $lang_id = null): Iface;
     /**
      * Returns the attributes filtered by the previously assigned conditions
      *
@@ -115,7 +104,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned attributes for slicing the list of found attributes
      *
@@ -125,7 +113,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -134,7 +121,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Adds attribute types for filtering
      *
@@ -143,7 +129,6 @@ interface Iface
      * @since 2019.04
      */
     public function type($codes): Iface;
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

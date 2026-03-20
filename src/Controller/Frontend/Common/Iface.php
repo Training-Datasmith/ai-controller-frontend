@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Metaways Infosystems GmbH, 2012
@@ -9,7 +8,6 @@ declare(strict_types=1);
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Common;
 
 /**
@@ -25,6 +23,5 @@ interface Iface extends \Aimeos\Controller\Frontend\Iface
      *
      * @param \Aimeos\MShop\ContextIface $context MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context);
-
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context);
 }

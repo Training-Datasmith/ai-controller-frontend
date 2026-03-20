@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Supplier;
 
 /**
@@ -29,7 +27,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the supplier for the given supplier code
      *
@@ -38,8 +35,7 @@ interface Iface
      * @return \Aimeos\MShop\Supplier\Item\Iface Supplier item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Supplier\Item\Iface;
-
+    public function find(string $code): \Aimeos\M_Shop\Supplier\Item\Iface;
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -48,7 +44,6 @@ interface Iface
      * @return string Search function string that can be used in compare()
      */
     public function function(string $name, array $params): string;
-
     /**
      * Returns the supplier for the given supplier ID
      *
@@ -57,8 +52,7 @@ interface Iface
      * @return \Aimeos\MShop\Supplier\Item\Iface Supplier item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Supplier\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Supplier\Item\Iface;
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -68,8 +62,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.10
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface;
-
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -78,7 +71,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Returns the supplier for the given supplier URL name
      *
@@ -86,8 +78,7 @@ interface Iface
      * @return \Aimeos\MShop\Supplier\Item\Iface Supplier item including the referenced domains items
      * @since 2023.10
      */
-    public function resolve(string $name): \Aimeos\MShop\Supplier\Item\Iface;
-
+    public function resolve(string $name): \Aimeos\M_Shop\Supplier\Item\Iface;
     /**
      * Returns the suppliers filtered by the previously assigned conditions
      *
@@ -96,7 +87,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned supplier items for slicing the list of found supplier items
      *
@@ -106,7 +96,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -115,7 +104,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

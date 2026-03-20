@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller;
 
 /**
@@ -21,7 +19,6 @@ class Frontend
 {
     private static bool $cache = true;
     private static array $objects = [];
-
     /**
      * Enables or disables caching of class instances
      *
@@ -32,7 +29,6 @@ class Frontend
         self::$cache = $value;
         self::$objects = [];
     }
-
     /**
      * Creates the required controller specified by the given path of controller names
      *
@@ -49,29 +45,21 @@ class Frontend
      * @return \Aimeos\Controller\Frontend\Iface New frontend controller
      * @throws \Aimeos\Controller\Frontend\Exception If the given path is invalid or the manager wasn't found
      */
-    public static function create(
-        \Aimeos\MShop\ContextIface $context,
-        string $path,
-        ?string $name = null
-    ): \Aimeos\Controller\Frontend\Iface {
+    public static function create(\Aimeos\M_Shop\Context_Iface $context, string $path, ?string $name = null): \Aimeos\Controller\Frontend\Iface
+    {
         if (empty($path)) {
             throw new \Aimeos\Controller\Frontend\Exception('Controller path is empty', 400);
         }
-
         if (empty($name)) {
             $name = $context->config()->get('controller/frontend/' . $path . '/name', 'Standard');
         }
-
-        $iface = '\\Aimeos\\Controller\\Frontend\\' . str_replace('/', '\\', ucwords($path, '/')) . '\\Iface';
-        $classname = '\\Aimeos\\Controller\\Frontend\\' . str_replace('/', '\\', ucwords($path, '/')) . '\\' . $name;
-
+        $iface = '\Aimeos\Controller\Frontend\\' . str_replace('/', '\\', ucwords($path, '/')) . '\Iface';
+        $classname = '\Aimeos\Controller\Frontend\\' . str_replace('/', '\\', ucwords($path, '/')) . '\\' . $name;
         if (self::$cache === false || !isset(self::$objects[$classname])) {
-            self::$objects[$classname] = self::createController($context, $classname, $iface, $path);
+            self::$objects[$classname] = self::create_controller($context, $classname, $iface, $path);
         }
-
         return clone self::$objects[$classname];
     }
-
     /**
      * Injects a manager object for the given path of manager names
      *
@@ -85,7 +73,6 @@ class Frontend
     {
         self::$objects['\\' . ltrim($classname, '\\')] = $object;
     }
-
     /**
      * Adds the decorators to the controller object.
      *
@@ -94,22 +81,16 @@ class Frontend
      * @param string $domain Domain name in lower case, e.g. "product"
      * @return \Aimeos\Controller\Frontend\Iface Controller object
      */
-    protected static function addControllerDecorators(
-        \Aimeos\MShop\ContextIface $context,
-        \Aimeos\Controller\Frontend\Iface $controller,
-        string $domain
-    ): \Aimeos\Controller\Frontend\Iface {
+    protected static function add_controller_decorators(\Aimeos\M_Shop\Context_Iface $context, \Aimeos\Controller\Frontend\Iface $controller, string $domain): \Aimeos\Controller\Frontend\Iface
+    {
         $config = $context->config();
-        $localClass = str_replace('/', '\\', ucwords($domain, '/'));
-
-        $classprefix = '\\Aimeos\\Controller\\Frontend\\' . ucfirst($localClass) . '\\Decorator\\';
+        $local_class = str_replace('/', '\\', ucwords($domain, '/'));
+        $classprefix = '\Aimeos\Controller\Frontend\\' . ucfirst($local_class) . '\Decorator\\';
         $decorators = array_reverse($config->get('controller/frontend/' . $domain . '/decorators/local', []));
-        $controller = self::addDecorators($context, $controller, $decorators, $classprefix);
-
-        $classprefix = '\\Aimeos\\Controller\\Frontend\\Common\\Decorator\\';
+        $controller = self::add_decorators($context, $controller, $decorators, $classprefix);
+        $classprefix = '\Aimeos\Controller\Frontend\Common\Decorator\\';
         $decorators = array_reverse($config->get('controller/frontend/' . $domain . '/decorators/global', []));
-        $controller = self::addDecorators($context, $controller, $decorators, $classprefix);
-
+        $controller = self::add_decorators($context, $controller, $decorators, $classprefix);
         /** controller/frontend/common/decorators/default
          * Configures the list of decorators applied to all frontend controllers
          *
@@ -134,19 +115,15 @@ class Frontend
          */
         $decorators = array_reverse($config->get('controller/frontend/common/decorators/default', []));
         $excludes = $config->get('controller/frontend/' . $domain . '/decorators/excludes', []);
-
         foreach ($decorators as $key => $name) {
             if (in_array($name, $excludes)) {
                 unset($decorators[$key]);
             }
         }
-
-        $classprefix = '\\Aimeos\\Controller\\Frontend\\Common\\Decorator\\';
-        $controller = self::addDecorators($context, $controller, $decorators, $classprefix);
-
-        return $controller->setObject($controller);
+        $classprefix = '\Aimeos\Controller\Frontend\Common\Decorator\\';
+        $controller = self::add_decorators($context, $controller, $decorators, $classprefix);
+        return $controller->set_object($controller);
     }
-
     /**
      * Adds the decorators to the controller object.
      *
@@ -157,25 +134,17 @@ class Frontend
      * @return \Aimeos\Controller\Frontend\Iface Controller object
      * @throws \LogicException If class can't be instantiated
      */
-    protected static function addDecorators(
-        \Aimeos\MShop\ContextIface $context,
-        \Aimeos\Controller\Frontend\Iface $controller,
-        array $decorators,
-        string $classprefix
-    ): \Aimeos\Controller\Frontend\Iface {
+    protected static function add_decorators(\Aimeos\M_Shop\Context_Iface $context, \Aimeos\Controller\Frontend\Iface $controller, array $decorators, string $classprefix): \Aimeos\Controller\Frontend\Iface
+    {
         $interface = \Aimeos\Controller\Frontend\Iface::class;
-
         foreach ($decorators as $name) {
             if (ctype_alnum($name) === false) {
                 throw new \LogicException(sprintf('Invalid class name "%1$s"', $name), 400);
             }
-
             $controller = \Aimeos\Utils::create($classprefix . $name, [$controller, $context], $interface);
         }
-
         return $controller;
     }
-
     /**
      * Creates a controller object.
      *
@@ -185,18 +154,12 @@ class Frontend
      * @param string $path Name of the domain (and sub-managers) separated by slashes, e.g "basket"
      * @return \Aimeos\Controller\Frontend\Iface Controller object
      */
-    protected static function createController(
-        \Aimeos\MShop\ContextIface $context,
-        string $classname,
-        string $interface,
-        string $path
-    ): \Aimeos\Controller\Frontend\Iface {
+    protected static function create_controller(\Aimeos\M_Shop\Context_Iface $context, string $classname, string $interface, string $path): \Aimeos\Controller\Frontend\Iface
+    {
         if (isset(self::$objects[$classname])) {
             return self::$objects[$classname];
         }
-
         $cntl = \Aimeos\Utils::create($classname, [$context], $interface);
-
-        return self::addControllerDecorators($context, $cntl, $path);
+        return self::add_controller_decorators($context, $cntl, $path);
     }
 }

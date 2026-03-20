@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2015-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Catalog;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/catalog/decorators/excludes
      * Excludes decorators added by the "common" option from the catalog frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/catalog/decorators/global
      * @see controller/frontend/catalog/decorators/local
      */
-
     /** controller/frontend/catalog/decorators/global
      * Adds a list of globally available decorators only to the catalog frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/catalog/decorators/excludes
      * @see controller/frontend/catalog/decorators/local
      */
-
     /** controller/frontend/catalog/decorators/local
      * Adds a list of local decorators only to the catalog frontend controllers
      *
@@ -127,25 +122,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/catalog/decorators/excludes
      * @see controller/frontend/catalog/decorators/global
      */
-
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     private \Aimeos\Base\Criteria\Iface $filter;
     private ?string $root = null;
     private array $domains = [];
-
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'catalog');
+        $this->manager = \Aimeos\M_Shop::create($context, 'catalog');
         $this->filter = $this->manager->filter(true);
     }
-
     /**
      * Clones objects in controller
      */
@@ -154,7 +145,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Adds generic condition for filtering attributes
      *
@@ -166,10 +156,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns the category for the given catalog code
      *
@@ -177,11 +166,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Catalog\Item\Iface Catalog item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Catalog\Item\Iface
+    public function find(string $code): \Aimeos\M_Shop\Catalog\Item\Iface
     {
         return $this->manager->find($code, $this->domains, null, null, null);
     }
-
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -193,7 +181,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         return $this->filter->make($name, $params);
     }
-
     /**
      * Returns the category for the given catalog ID
      *
@@ -201,11 +188,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Catalog\Item\Iface Catalog item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Catalog\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Catalog\Item\Iface
     {
         return $this->manager->get($id, $this->domains, null);
     }
-
     /**
      * Returns the list of categories up to the root node including the node given by its ID
      *
@@ -213,14 +199,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Catalog\Item\Iface[] Associative list of categories
      * @since 2017.03
      */
-    public function getPath(string $id)
+    public function get_path(string $id)
     {
-        $list = $this->manager->getPath($id, $this->domains);
-
-        if ($list->isAvailable()->search(false)) {
+        $list = $this->manager->get_path($id, $this->domains);
+        if ($list->is_available()->search(false)) {
             throw new \Aimeos\Controller\Frontend\Exception(sprintf('Category is not available'), 404);
         }
-
         if ($this->root) {
             foreach ($list as $key => $item) {
                 if ($key == $this->root) {
@@ -229,10 +213,8 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
                 unset($list[$key]);
             }
         }
-
         return $list;
     }
-
     /**
      * Returns the categories filtered by the previously assigned conditions
      *
@@ -240,14 +222,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Catalog\Item\Iface Category tree
      * @since 2019.04
      */
-    public function getTree(int $level = Iface::TREE): \Aimeos\MShop\Catalog\Item\Iface
+    public function get_tree(int $level = Iface::TREE): \Aimeos\M_Shop\Catalog\Item\Iface
     {
-        $this->addExpression($this->filter->getConditions());
-        $this->filter->add($this->filter->and($this->getConditions()));
-
-        return $this->manager->getTree($this->root, $this->domains, $level, $this->filter);
+        $this->add_expression($this->filter->get_conditions());
+        $this->filter->add($this->filter->and($this->get_conditions()));
+        return $this->manager->get_tree($this->root, $this->domains, $level, $this->filter);
     }
-
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -257,17 +237,15 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Supplier\Iface Supplier controller for fluent interface
      * @since 2019.10
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface
     {
         $params = [$domain];
         !$type ?: $params[] = $type;
-        !$refId ?: $params[] = $refId;
-
+        !$ref_id ?: $params[] = $ref_id;
         $func = $this->filter->make('catalog:has', $params);
-        $this->addExpression($this->filter->compare('!=', $func, null));
+        $this->add_expression($this->filter->compare('!=', $func, null));
         return $this;
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -278,12 +256,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Returns the category for the given category URL name
      *
@@ -291,18 +267,15 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Catalog\Item\Iface Catalog item including the referenced domains items
      * @since 2023.10
      */
-    public function resolve(string $name): \Aimeos\MShop\Catalog\Item\Iface
+    public function resolve(string $name): \Aimeos\M_Shop\Catalog\Item\Iface
     {
         $search = $this->manager->filter(null)->add('catalog.url', '==', $name)->slice(0, 1);
-
         if (($item = $this->manager->search($search, $this->domains)->first()) === null) {
             $msg = $this->context()->translate('controller/frontend', 'Unable to find category "%1$s"');
             throw new \Aimeos\Controller\Frontend\Catalog\Exception(sprintf($msg, $name), 404);
         }
-
         return $item;
     }
-
     /**
      * Sets the catalog ID of node that is used as root node
      *
@@ -312,10 +285,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function root(?string $id = null): Iface
     {
-        $this->root = ($id ?: null);
+        $this->root = $id ?: null;
         return $this;
     }
-
     /**
      * Returns the categories filtered by the previously assigned conditions
      *
@@ -326,15 +298,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
-        $this->addExpression($filter->getConditions());
-
-        $filter->add($filter->and($this->getConditions()));
-        $filter->setSortations($this->getSortations());
-
+        $this->add_expression($filter->get_conditions());
+        $filter->add($filter->and($this->get_conditions()));
+        $filter->set_sortations($this->get_sortations());
         return $this->manager->search($filter, $this->domains, $total);
     }
-
     /**
      * Sets the start value and the number of returned products for slicing the list of found products
      *
@@ -349,7 +317,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -359,16 +326,13 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
-            $this->addExpression($this->filter->sort($direction, ltrim($sortkey, '+-')));
+            $direction = $sortkey[0] === '-' ? '-' : '+';
+            $this->add_expression($this->filter->sort($direction, ltrim($sortkey, '+-')));
         }
-
         return $this;
     }
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *
@@ -381,23 +345,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->domains = $domains;
         return $this;
     }
-
     /**
      * Limits categories returned to only visible ones depending on the given category IDs
      *
      * @param array $catIds List of category IDs
      * @return \Aimeos\Controller\Frontend\Catalog\Iface Catalog controller for fluent interface
      */
-    public function visible(array $catIds): Iface
+    public function visible(array $cat_ids): Iface
     {
         $expr = [];
         $config = $this->context()->config();
-
-        if (!empty($catIds)) {
-            $expr[] = $this->filter->compare('==', 'catalog.parentid', $catIds);
-            $expr[] = $this->filter->compare('==', 'catalog.id', $catIds);
+        if (!empty($cat_ids)) {
+            $expr[] = $this->filter->compare('==', 'catalog.parentid', $cat_ids);
+            $expr[] = $this->filter->compare('==', 'catalog.id', $cat_ids);
         }
-
         /** controller/frontend/catalog/levels-always
          * The number of levels in the category tree that should be always displayed
          *
@@ -426,7 +387,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         if (($levels = $config->get('controller/frontend/catalog/levels-always')) != null) {
             $expr[] = $this->filter->compare('<=', 'catalog.level', $levels);
         }
-
         /** controller/frontend/catalog/levels-only
          * No more than this number of levels in the category tree should be displayed
          *
@@ -450,19 +410,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
          * @see controller/frontend/catalog/levels-always
          */
         if (($levels = $config->get('controller/frontend/catalog/levels-only')) != null) {
-            $this->addExpression($this->filter->compare('<=', 'catalog.level', $levels));
+            $this->add_expression($this->filter->compare('<=', 'catalog.level', $levels));
         }
-
-        $this->addExpression($this->filter->or($expr));
+        $this->add_expression($this->filter->or($expr));
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

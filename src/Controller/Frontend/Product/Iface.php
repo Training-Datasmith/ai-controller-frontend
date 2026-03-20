@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Product;
 
 /**
@@ -29,7 +27,6 @@ interface Iface
      * @since 2019.04
      */
     public function aggregate(string $key, ?string $value = null, ?string $type = null): \Aimeos\Map;
-
     /**
      * Adds attribute IDs for filtering where products must reference all IDs
      *
@@ -37,8 +34,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function allOf($attrIds): Iface;
-
+    public function all_of($attr_ids): Iface;
     /**
      * Adds catalog IDs for filtering
      *
@@ -48,8 +44,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function category($catIds, string $listtype = 'default', int $level = \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE): Iface;
-
+    public function category($cat_ids, string $listtype = 'default', int $level = \Aimeos\MW\Tree\Manager\Base::LEVEL_ONE): Iface;
     /**
      * Adds generic condition for filtering products
      *
@@ -60,7 +55,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the product for the given product code
      *
@@ -68,8 +62,7 @@ interface Iface
      * @return \Aimeos\MShop\Product\Item\Iface Product item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Product\Item\Iface;
-
+    public function find(string $code): \Aimeos\M_Shop\Product\Item\Iface;
     /**
      * Creates a search function string for the given name and parameters
      *
@@ -78,7 +71,6 @@ interface Iface
      * @return string Search function string that can be used in compare()
      */
     public function function(string $name, array $params): string;
-
     /**
      * Returns the product for the given product ID
      *
@@ -86,8 +78,7 @@ interface Iface
      * @return \Aimeos\MShop\Product\Item\Iface Product item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Product\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Product\Item\Iface;
     /**
      * Adds a filter to return only items containing a reference to the given ID
      *
@@ -97,8 +88,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function has(string $domain, ?string $type = null, ?string $refId = null): Iface;
-
+    public function has(string $domain, ?string $type = null, ?string $ref_id = null): Iface;
     /**
      * Adds attribute IDs for filtering where products must reference at least one ID
      *
@@ -106,8 +96,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function oneOf($attrIds): Iface;
-
+    public function one_of($attr_ids): Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -116,7 +105,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Adds price restrictions for filtering
      *
@@ -125,7 +113,6 @@ interface Iface
      * @since 2020.10
      */
     public function price($value = null): Iface;
-
     /**
      * Adds product IDs for filtering
      *
@@ -133,8 +120,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function product($prodIds): Iface;
-
+    public function product($prod_ids): Iface;
     /**
      * Adds a filter to return only items containing the property
      *
@@ -144,8 +130,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function property(string $type, ?string $value = null, ?string $langId = null): Iface;
-
+    public function property(string $type, ?string $value = null, ?string $lang_id = null): Iface;
     /**
      * Adds radius restrictions for filtering
      *
@@ -155,7 +140,6 @@ interface Iface
      * @since 2021.10
      */
     public function radius(array $latlon, ?float $dist = null): \Aimeos\Controller\Frontend\Product\Iface;
-
     /**
      * Returns the product for the given product URL name
      *
@@ -163,8 +147,7 @@ interface Iface
      * @return \Aimeos\MShop\Product\Item\Iface Product item including the referenced domains items
      * @since 2019.04
      */
-    public function resolve(string $name): \Aimeos\MShop\Product\Item\Iface;
-
+    public function resolve(string $name): \Aimeos\M_Shop\Product\Item\Iface;
     /**
      * Returns the products filtered by the previously assigned conditions
      *
@@ -173,7 +156,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned products for slicing the list of found products
      *
@@ -183,7 +165,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *
@@ -192,7 +173,6 @@ interface Iface
      * @since 2019.04
      */
     public function sort(?string $key = null): Iface;
-
     /**
      * Adds supplier IDs for filtering
      *
@@ -201,8 +181,7 @@ interface Iface
      * @return \Aimeos\Controller\Frontend\Product\Iface Product controller for fluent interface
      * @since 2019.04
      */
-    public function supplier($supIds, string $listtype = 'default'): Iface;
-
+    public function supplier($sup_ids, string $listtype = 'default'): Iface;
     /**
      * Adds input string for full text search
      *
@@ -211,7 +190,6 @@ interface Iface
      * @since 2019.04
      */
     public function text(?string $text = null): Iface;
-
     /**
      * Sets the referenced domains that will be fetched too when retrieving items
      *

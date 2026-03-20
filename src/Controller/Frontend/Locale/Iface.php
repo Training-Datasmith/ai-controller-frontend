@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Locale;
 
 /**
@@ -29,7 +27,6 @@ interface Iface
      * @since 2019.04
      */
     public function compare(string $operator, string $key, $value): Iface;
-
     /**
      * Returns the locale for the given locale ID
      *
@@ -37,8 +34,7 @@ interface Iface
      * @return \Aimeos\MShop\Locale\Item\Iface Locale item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Locale\Item\Iface;
-
+    public function get(string $id): \Aimeos\M_Shop\Locale\Item\Iface;
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -47,7 +43,6 @@ interface Iface
      * @since 2019.04
      */
     public function parse(array $conditions): Iface;
-
     /**
      * Returns the locales filtered by the previously assigned conditions
      *
@@ -56,7 +51,6 @@ interface Iface
      * @since 2019.04
      */
     public function search(?int &$total = null): \Aimeos\Map;
-
     /**
      * Sets the start value and the number of returned locale items for slicing the list of found locale items
      *
@@ -66,7 +60,6 @@ interface Iface
      * @since 2019.04
      */
     public function slice(int $start, int $limit): Iface;
-
     /**
      * Sets the sorting of the result list
      *

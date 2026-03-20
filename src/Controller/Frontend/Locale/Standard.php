@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Locale;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/locale/decorators/excludes
      * Excludes decorators added by the "common" option from the locale frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/locale/decorators/global
      * @see controller/frontend/locale/decorators/local
      */
-
     /** controller/frontend/locale/decorators/global
      * Adds a list of globally available decorators only to the locale frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/locale/decorators/excludes
      * @see controller/frontend/locale/decorators/local
      */
-
     /** controller/frontend/locale/decorators/local
      * Adds a list of local decorators only to the locale frontend controllers
      *
@@ -127,25 +122,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/locale/decorators/excludes
      * @see controller/frontend/locale/decorators/global
      */
-
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'locale');
+        $this->manager = \Aimeos\M_Shop::create($context, 'locale');
         $this->filter = $this->manager->filter(true);
-
-        $this->addExpression($this->filter->compare('==', 'locale.siteid', $context->locale()->getSitePath()));
+        $this->add_expression($this->filter->compare('==', 'locale.siteid', $context->locale()->get_site_path()));
     }
-
     /**
      * Clones objects in controller
      */
@@ -154,7 +144,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Adds generic condition for filtering
      *
@@ -166,10 +155,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns the locale for the given locale ID
      *
@@ -177,11 +165,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Locale\Item\Iface Locale item including the referenced domains items
      * @since 2019.04
      */
-    public function get(string $id): \Aimeos\MShop\Locale\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Locale\Item\Iface
     {
         return $this->manager->get($id, [], null);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -192,12 +179,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Returns the locales filtered by the previously assigned conditions
      *
@@ -208,15 +193,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function search(?int &$total = null): \Aimeos\Map
     {
         $filter = clone $this->filter;
-
-        $this->addExpression($filter->getConditions());
-
-        $filter->add($filter->and($this->getConditions()));
-        $filter->setSortations($this->getSortations());
-
+        $this->add_expression($filter->get_conditions());
+        $filter->add($filter->and($this->get_conditions()));
+        $filter->set_sortations($this->get_sortations());
         return $this->manager->search($filter, [], $total);
     }
-
     /**
      * Sets the start value and the number of returned locale items for slicing the list of found locale items
      *
@@ -231,7 +212,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, min($limit, $maxsize));
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -241,27 +221,23 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             match ($sortkey) {
-                'position' => $this->addExpression($this->filter->sort($direction, 'locale.position')),
-                default => $this->addExpression($this->filter->sort($direction, $sortkey)),
+                'position' => $this->add_expression($this->filter->sort($direction, 'locale.position')),
+                default => $this->add_expression($this->filter->sort($direction, $sortkey)),
             };
         }
-
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

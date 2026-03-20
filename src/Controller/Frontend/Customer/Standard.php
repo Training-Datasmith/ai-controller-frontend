@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2017-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Customer;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2014.03
      * @category Developer
      */
-
     /** controller/frontend/customer/decorators/excludes
      * Excludes decorators added by the "common" option from the customer frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/customer/decorators/global
      * @see controller/frontend/customer/decorators/local
      */
-
     /** controller/frontend/customer/decorators/global
      * Adds a list of globally available decorators only to the customer frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/customer/decorators/excludes
      * @see controller/frontend/customer/decorators/local
      */
-
     /** controller/frontend/customer/decorators/local
      * Adds a list of local decorators only to the customer frontend controllers
      *
@@ -127,22 +122,18 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/customer/decorators/excludes
      * @see controller/frontend/customer/decorators/global
      */
-
     private array $domains = [];
-    private \Aimeos\MShop\Customer\Item\Iface $item;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Customer\Item\Iface $item;
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Initializes the controller
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'customer');
-
+        $this->manager = \Aimeos\M_Shop::create($context, 'customer');
         if (($userid = $context->user()) === null) {
             /** controller/frontend/customer/groupids
              * List of groups new customers should be assigned to
@@ -156,13 +147,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
              * @category User
              * @category Developer
              */
-            $groupIds = (array) $context->config()->get('controller/frontend/customer/groupids', []);
-            $this->item = $this->manager->create()->setGroups($groupIds);
+            $group_ids = (array) $context->config()->get('controller/frontend/customer/groupids', []);
+            $this->item = $this->manager->create()->set_groups($group_ids);
         } else {
             $this->item = $this->manager->get($userid, [], true);
         }
     }
-
     /**
      * Clones objects in controller and resets values
      */
@@ -171,7 +161,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->item = clone $this->item;
         parent::__clone();
     }
-
     /**
      * Creates a new customer item object pre-filled with the given values but not yet stored
      *
@@ -183,38 +172,30 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         foreach ($values as $key => $value) {
             if (is_scalar($value)) {
-                $values[$key] = strip_tags((string) $value); // prevent XSS
+                $values[$key] = strip_tags((string) $value);
+                // prevent XSS
             }
         }
-
-        $addrItem = $this->item->getPaymentAddress();
-
+        $addr_item = $this->item->get_payment_address();
         if ($code = $values['customer.code'] ?? null) {
-            $this->item->setCode($code);
+            $this->item->set_code($code);
         }
-
         if ($password = $values['customer.password'] ?? null) {
-            $this->item = $this->item->setPassword($password);
+            $this->item = $this->item->set_password($password);
         }
-
-        if ($this->item->getLabel() === '') {
-            $label = $addrItem->getLastname();
-
-            if (($firstName = $addrItem->getFirstname()) !== '') {
-                $label = $firstName . ' ' . $label;
+        if ($this->item->get_label() === '') {
+            $label = $addr_item->get_lastname();
+            if (($first_name = $addr_item->get_firstname()) !== '') {
+                $label = $first_name . ' ' . $label;
             }
-
-            if (($company = $addrItem->getCompany()) !== '') {
+            if (($company = $addr_item->get_company()) !== '') {
                 $label .= ' (' . $company . ')';
             }
-
-            $this->item->setLabel($label);
+            $this->item->set_label($label);
         }
-
-        $this->item->fromArray($values);
+        $this->item->from_array($values);
         return $this;
     }
-
     /**
      * Adds the given address item to the customer object (not yet stored)
      *
@@ -223,12 +204,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Customer\Iface Customer controller for fluent interface
      * @since 2019.04
      */
-    public function addAddressItem(\Aimeos\MShop\Common\Item\Address\Iface $item, ?int $idx = null): Iface
+    public function add_address_item(\Aimeos\M_Shop\Common\Item\Address\Iface $item, ?int $idx = null): Iface
     {
-        $this->item = $this->item->addAddressItem($item, $idx);
+        $this->item = $this->item->add_address_item($item, $idx);
         return $this;
     }
-
     /**
      * Adds the given list item to the customer object (not yet stored)
      *
@@ -238,19 +218,14 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Customer\Iface Customer controller for fluent interface
      * @since 2019.04
      */
-    public function addListItem(
-        string $domain,
-        \Aimeos\MShop\Common\Item\Lists\Iface $item,
-        ?\Aimeos\MShop\Common\Item\Iface $refItem = null
-    ): Iface {
+    public function add_list_item(string $domain, \Aimeos\M_Shop\Common\Item\Lists\Iface $item, ?\Aimeos\M_Shop\Common\Item\Iface $ref_item = null): Iface
+    {
         if ($domain === 'group') {
             throw new Exception(sprintf('You are not allowed to manage groups'));
         }
-
-        $this->item = $this->item->addListItem($domain, $item, $refItem);
+        $this->item = $this->item->add_list_item($domain, $item, $ref_item);
         return $this;
     }
-
     /**
      * Adds the given property item to the customer object (not yet stored)
      *
@@ -258,12 +233,11 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Customer\Iface Customer controller for fluent interface
      * @since 2019.04
      */
-    public function addPropertyItem(\Aimeos\MShop\Common\Item\Property\Iface $item): Iface
+    public function add_property_item(\Aimeos\M_Shop\Common\Item\Property\Iface $item): Iface
     {
-        $this->item = $this->item->addPropertyItem($item);
+        $this->item = $this->item->add_property_item($item);
         return $this;
     }
-
     /**
      * Creates a new address item object pre-filled with the given values
      *
@@ -271,11 +245,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Customer\Item\Address\Iface Address item
      * @since 2019.04
      */
-    public function createAddressItem(array $values = []): \Aimeos\MShop\Customer\Item\Address\Iface
+    public function create_address_item(array $values = []): \Aimeos\M_Shop\Customer\Item\Address\Iface
     {
-        return $this->manager->createAddressItem()->fromArray($values);
+        return $this->manager->create_address_item()->from_array($values);
     }
-
     /**
      * Creates a new list item object pre-filled with the given values
      *
@@ -283,11 +256,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Common\Item\Lists\Iface List item
      * @since 2019.04
      */
-    public function createListItem(array $values = []): \Aimeos\MShop\Common\Item\Lists\Iface
+    public function create_list_item(array $values = []): \Aimeos\M_Shop\Common\Item\Lists\Iface
     {
-        return $this->manager->createListItem()->fromArray($values);
+        return $this->manager->create_list_item()->from_array($values);
     }
-
     /**
      * Creates a new property item object pre-filled with the given values
      *
@@ -295,11 +267,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Common\Item\Property\Iface Property item
      * @since 2019.04
      */
-    public function createPropertyItem(array $values = []): \Aimeos\MShop\Common\Item\Property\Iface
+    public function create_property_item(array $values = []): \Aimeos\M_Shop\Common\Item\Property\Iface
     {
-        return $this->manager->createPropertyItem()->fromArray($values);
+        return $this->manager->create_property_item()->from_array($values);
     }
-
     /**
      * Deletes a customer item that belongs to the current authenticated user
      *
@@ -308,25 +279,22 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function delete(): Iface
     {
-        if ($this->item && $this->item->getId()) {
-            \Aimeos\MShop::create($this->context(), 'customer')->delete($this->item->getId());
+        if ($this->item && $this->item->get_id()) {
+            \Aimeos\M_Shop::create($this->context(), 'customer')->delete($this->item->get_id());
         }
-
         return $this;
     }
-
     /**
      * Removes the given address item from the customer object (not yet stored)
      *
      * @param \Aimeos\MShop\Common\Item\Address\Iface $item Address item to remove
      * @return \Aimeos\Controller\Frontend\Customer\Iface Customer controller for fluent interface
      */
-    public function deleteAddressItem(\Aimeos\MShop\Common\Item\Address\Iface $item): Iface
+    public function delete_address_item(\Aimeos\M_Shop\Common\Item\Address\Iface $item): Iface
     {
-        $this->item = $this->item->deleteAddressItem($item);
+        $this->item = $this->item->delete_address_item($item);
         return $this;
     }
-
     /**
      * Removes the given list item from the customer object (not yet stored)
      *
@@ -335,31 +303,25 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @param \Aimeos\MShop\Common\Item\Iface|null $refItem Referenced item to remove or null if only list item should be removed
      * @return \Aimeos\Controller\Frontend\Customer\Iface Customer controller for fluent interface
      */
-    public function deleteListItem(
-        string $domain,
-        \Aimeos\MShop\Common\Item\Lists\Iface $listItem,
-        ?\Aimeos\MShop\Common\Item\Iface $refItem = null
-    ): Iface {
+    public function delete_list_item(string $domain, \Aimeos\M_Shop\Common\Item\Lists\Iface $list_item, ?\Aimeos\M_Shop\Common\Item\Iface $ref_item = null): Iface
+    {
         if ($domain === 'group') {
             throw new Exception(sprintf('You are not allowed to manage groups'));
         }
-
-        $this->item = $this->item->deleteListItem($domain, $listItem, $refItem);
+        $this->item = $this->item->delete_list_item($domain, $list_item, $ref_item);
         return $this;
     }
-
     /**
      * Removes the given property item from the customer object (not yet stored)
      *
      * @param \Aimeos\MShop\Common\Item\Property\Iface $item Property item to remove
      * @return \Aimeos\Controller\Frontend\Customer\Iface Customer controller for fluent interface
      */
-    public function deletePropertyItem(\Aimeos\MShop\Common\Item\Property\Iface $item): Iface
+    public function delete_property_item(\Aimeos\M_Shop\Common\Item\Property\Iface $item): Iface
     {
-        $this->item = $this->item->deletePropertyItem($item);
+        $this->item = $this->item->delete_property_item($item);
         return $this;
     }
-
     /**
      * Returns the customer item for the given customer code (usually e-mail address)
      *
@@ -369,22 +331,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\MShop\Customer\Item\Iface Customer item including the referenced domains items
      * @since 2019.04
      */
-    public function find(string $code): \Aimeos\MShop\Customer\Item\Iface
+    public function find(string $code): \Aimeos\M_Shop\Customer\Item\Iface
     {
         return $this->manager->find($code, $this->domains, 'customer', null, null);
     }
-
     /**
      * Returns the customer item for the current authenticated user
      *
      * @return \Aimeos\MShop\Customer\Item\Iface Customer item including the referenced domains items
      * @since 2019.04
      */
-    public function get(): \Aimeos\MShop\Customer\Item\Iface
+    public function get(): \Aimeos\M_Shop\Customer\Item\Iface
     {
         return $this->item;
     }
-
     /**
      * Adds or updates a modified customer item in the storage
      *
@@ -393,25 +353,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function store(): Iface
     {
-        ($id = $this->item->getId()) !== null ? $this->checkId($id) : $this->checkLimit();
+        ($id = $this->item->get_id()) !== null ? $this->check_id($id) : $this->check_limit();
         $context = $this->context();
-
         if ($id === null) {
-            $msg = $this->item->toArray();
-
+            $msg = $this->item->to_array();
             // Show only generated passwords in account creation e-mails
-            if ($this->item->getPassword() === '') {
+            if ($this->item->get_password() === '') {
                 $msg['customer.password'] = substr(sha1(microtime(true) . getmypid() . random_int(0, mt_getrandmax())), -8);
-                $this->item->setPassword($msg['customer.password']);
+                $this->item->set_password($msg['customer.password']);
             }
-
             $context->queue('mq-email', 'customer/email/account')->add(json_encode($msg));
         }
-
         $this->item = $this->manager->save($this->item);
         return $this;
     }
-
     /**
      * Sets the domains that will be used when working with the customer item
      *
@@ -422,25 +377,21 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function uses(array $domains): Iface
     {
         $this->domains = $domains;
-
         if (($id = $this->context()->user()) !== null) {
             $this->item = $this->manager->get($id, $domains, true);
         }
-
         return $this;
     }
-
     /**
      * Checks if the current user is allowed to create more customer accounts
      *
      * @throws \Aimeos\Controller\Frontend\Customer\Exception If access isn't allowed
      */
-    protected function checkLimit()
+    protected function check_limit()
     {
         $total = 0;
         $context = $this->context();
         $config = $context->config();
-
         /** controller/frontend/customer/limit-count
          * Maximum number of customers within the time frame
          *
@@ -457,7 +408,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
          * @see controller/frontend/customer/limit-seconds
          */
         $count = $config->get('controller/frontend/customer/limit-count', 3);
-
         /** controller/frontend/customer/limit-seconds
          * Customer account limitation time frame in seconds
          *
@@ -475,21 +425,14 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
          * @see controller/frontend/customer/limit-count
          */
         $seconds = $config->get('controller/frontend/customer/limit-seconds', 14400);
-
         $search = $this->manager->filter()->slice(0, 0);
-        $expr = [
-            $search->compare('==', 'customer.editor', $context->editor()),
-            $search->compare('>=', 'customer.ctime', date('Y-m-d H:i:s', time() - $seconds)),
-        ];
+        $expr = [$search->compare('==', 'customer.editor', $context->editor()), $search->compare('>=', 'customer.ctime', date('Y-m-d H:i:s', time() - $seconds))];
         $search->add($search->and($expr));
-
         $this->manager->search($search, [], $total);
-
         if ($total >= $count) {
             throw new \Aimeos\Controller\Frontend\Customer\Exception(sprintf('Temporary limit reached'));
         }
     }
-
     /**
      * Checks if the current user is allowed to retrieve the customer data for the given ID
      *
@@ -497,22 +440,20 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return string Unique customer ID
      * @throws \Aimeos\Controller\Frontend\Customer\Exception If access isn't allowed
      */
-    protected function checkId(string $id): string
+    protected function check_id(string $id): string
     {
         if ($id != $this->context()->user()) {
             $msg = sprintf('Not allowed to access customer data for ID "%1$s"', $id);
             throw new \Aimeos\Controller\Frontend\Customer\Exception($msg);
         }
-
         return $id;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }

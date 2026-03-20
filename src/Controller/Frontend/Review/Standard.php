@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @license LGPLv3, http://opensource.org/licenses/LGPL-3.0
  * @copyright Aimeos (aimeos.org), 2018-2026
  * @package Controller
  * @subpackage Frontend
  */
-
 namespace Aimeos\Controller\Frontend\Review;
 
 /**
@@ -52,7 +50,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @since 2020.10
      * @category Developer
      */
-
     /** controller/frontend/review/decorators/excludes
      * Excludes decorators added by the "common" option from the review frontend controllers
      *
@@ -78,7 +75,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/review/decorators/global
      * @see controller/frontend/review/decorators/local
      */
-
     /** controller/frontend/review/decorators/global
      * Adds a list of globally available decorators only to the review frontend controllers
      *
@@ -102,7 +98,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/review/decorators/excludes
      * @see controller/frontend/review/decorators/local
      */
-
     /** controller/frontend/review/decorators/local
      * Adds a list of local decorators only to the review frontend controllers
      *
@@ -127,23 +122,19 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @see controller/frontend/review/decorators/excludes
      * @see controller/frontend/review/decorators/global
      */
-
     private \Aimeos\Base\Criteria\Iface $filter;
-    private \Aimeos\MShop\Common\Manager\Iface $manager;
-
+    private \Aimeos\M_Shop\Common\Manager\Iface $manager;
     /**
      * Common initialization for controller classes
      *
      * @param \Aimeos\MShop\ContextIface $context Common MShop context object
      */
-    public function __construct(\Aimeos\MShop\ContextIface $context)
+    public function __construct(\Aimeos\M_Shop\Context_Iface $context)
     {
         parent::__construct($context);
-
-        $this->manager = \Aimeos\MShop::create($context, 'review');
+        $this->manager = \Aimeos\M_Shop::create($context, 'review');
         $this->filter = $this->manager->filter(true);
     }
-
     /**
      * Clones objects in controller
      */
@@ -152,7 +143,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter = clone $this->filter;
         parent::__clone();
     }
-
     /**
      * Returns the aggregated count of products for the given key.
      *
@@ -166,11 +156,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         $filter = clone $this->filter;
         $cond = $filter->is('review.status', '>', 0);
-
-        $filter->add($filter->and(array_merge($this->getConditions(), [$cond])));
+        $filter->add($filter->and(array_merge($this->get_conditions(), [$cond])));
         return $this->manager->aggregate($filter, $key, $value, $type);
     }
-
     /**
      * Adds generic condition for filtering
      *
@@ -182,21 +170,19 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function compare(string $operator, string $key, $value): Iface
     {
-        $this->addExpression($this->filter->compare($operator, $key, $value));
+        $this->add_expression($this->filter->compare($operator, $key, $value));
         return $this;
     }
-
     /**
      * Returns a new rating item
      *
      * @param array $vals Associative list of key/value pairs to initialize the item
      * @return \Aimeos\MShop\Review\Item\Iface New review item
      */
-    public function create(array $vals = []): \Aimeos\MShop\Review\Item\Iface
+    public function create(array $vals = []): \Aimeos\M_Shop\Review\Item\Iface
     {
-        return $this->manager->create()->setOrderProductId($vals['review.orderproductid'] ?? '')->fromArray($vals);
+        return $this->manager->create()->set_order_product_id($vals['review.orderproductid'] ?? '')->from_array($vals);
     }
-
     /**
      * Deletes the review item for the given ID or IDs
      *
@@ -208,11 +194,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         $ids = (array) $ids;
         $filter = $this->manager->filter()->add(['review.id' => $ids, 'review.customerid' => $this->context()->user()]);
-        $this->manager->delete($this->manager->search($filter->slice(0, count($ids)))->toArray());
-
+        $this->manager->delete($this->manager->search($filter->slice(0, count($ids)))->to_array());
         return $this;
     }
-
     /**
      * Sets the review domain for filtering
      *
@@ -222,10 +206,9 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function domain(string $domain): Iface
     {
-        $this->addExpression($this->filter->compare('==', 'review.domain', $domain));
+        $this->add_expression($this->filter->compare('==', 'review.domain', $domain));
         return $this;
     }
-
     /**
      * Restricts the reviews to a specific domain item
      *
@@ -236,26 +219,22 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function for(string $domain, $refid): Iface
     {
-        $this->addExpression($this->filter->compare('==', 'review.domain', $domain));
-
+        $this->add_expression($this->filter->compare('==', 'review.domain', $domain));
         if ($refid !== null) {
-            $this->addExpression($this->filter->compare('==', 'review.refid', $refid));
+            $this->add_expression($this->filter->compare('==', 'review.refid', $refid));
         }
-
         return $this;
     }
-
     /**
      * Returns the review item for the given ID
      *
      * @param string $id Unique review ID
      * @return \Aimeos\MShop\Review\Item\Iface Review object
      */
-    public function get(string $id): \Aimeos\MShop\Review\Item\Iface
+    public function get(string $id): \Aimeos\M_Shop\Review\Item\Iface
     {
         return $this->manager->get($id, [], null);
     }
-
     /**
      * Returns the reviews for the logged-in user
      *
@@ -267,13 +246,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         $filter = clone $this->filter;
         $cond = $filter->is('review.customerid', '==', $this->context()->user());
-
-        $filter->setConditions($filter->and(array_merge($this->getConditions(), [$cond])));
-        $filter->setSortations($this->getSortations());
-
+        $filter->set_conditions($filter->and(array_merge($this->get_conditions(), [$cond])));
+        $filter->set_sortations($this->get_sortations());
         return $this->manager->search($filter, [], $total);
     }
-
     /**
      * Parses the given array and adds the conditions to the list of conditions
      *
@@ -284,12 +260,10 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     public function parse(array $conditions): Iface
     {
         if (($cond = $this->filter->parse($conditions)) !== null) {
-            $this->addExpression($cond);
+            $this->add_expression($cond);
         }
-
         return $this;
     }
-
     /**
      * Adds or updates a review
      *
@@ -297,33 +271,19 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      * @return \Aimeos\Controller\Frontend\Review\Iface Review controller for fluent interface
      * @since 2020.10
      */
-    public function save(\Aimeos\MShop\Review\Item\Iface $item): \Aimeos\MShop\Review\Item\Iface
+    public function save(\Aimeos\M_Shop\Review\Item\Iface $item): \Aimeos\M_Shop\Review\Item\Iface
     {
-        $domain = $item->getDomain();
-
+        $domain = $item->get_domain();
         if (!in_array($domain, ['product', 'locale/site'])) {
             $msg = sprintf('Domain "%1$s" is not supported', $domain);
             throw new \Aimeos\Controller\Frontend\Review\Exception($msg);
         }
-
         $context = $this->context();
-        $manager = \Aimeos\MShop::create($context, 'order');
-
-        $filter = $manager->filter(true)->add([
-            'order.product.id' => $item->getOrderProductId(),
-            'order.customerid' => $context->user(),
-        ]);
-        $manager->search($filter->slice(0, 1))->first(new \Aimeos\Controller\Frontend\Review\Exception(
-            sprintf('You can only add a review if you have ordered a product')
-        ));
-
-        $ordProdItem = \Aimeos\MShop::create($context, 'order/product')->get($item->getOrderProductId());
-
-        $filter = $this->manager->filter()->add([
-            'review.customerid' => $context->user(),
-            'review.id' => $item->getId(),
-        ]);
-
+        $manager = \Aimeos\M_Shop::create($context, 'order');
+        $filter = $manager->filter(true)->add(['order.product.id' => $item->get_order_product_id(), 'order.customerid' => $context->user()]);
+        $manager->search($filter->slice(0, 1))->first(new \Aimeos\Controller\Frontend\Review\Exception(sprintf('You can only add a review if you have ordered a product')));
+        $ord_prod_item = \Aimeos\M_Shop::create($context, 'order/product')->get($item->get_order_product_id());
+        $filter = $this->manager->filter()->add(['review.customerid' => $context->user(), 'review.id' => $item->get_id()]);
         /** controller/frontend/review/status
          * Default status for new reviews
          *
@@ -338,38 +298,17 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
          * @since 2020.10
          */
         $status = $context->config()->get('controller/frontend/review/status', -1);
-
         $real = $this->manager->search($filter->slice(0, 1))->first($this->manager->create());
-
-        $real = $real->setCustomerId($context->user())
-            ->setRefId($ordProdItem->getType() === 'select' ? $ordProdItem->getParentProductId() : $ordProdItem->getProductId())
-            ->setOrderProductId($ordProdItem->getId())
-            ->setComment($item->getComment())
-            ->setRating($item->getRating())
-            ->setName($item->getName())
-            ->setDomain('product')
-            ->setStatus($status);
-
+        $real = $real->set_customer_id($context->user())->set_ref_id($ord_prod_item->get_type() === 'select' ? $ord_prod_item->get_parent_product_id() : $ord_prod_item->get_product_id())->set_order_product_id($ord_prod_item->get_id())->set_comment($item->get_comment())->set_rating($item->get_rating())->set_name($item->get_name())->set_domain('product')->set_status($status);
         $item = $this->manager->save($real);
-
-        $filter = $this->manager->filter(true)->add([
-            'review.refid' => $item->getRefId(),
-            'review.domain' => $domain,
-        ]);
-
-        if ($status > 0
-            && ($entry = $this->manager->aggregate($filter, 'review.refid', 'review.rating', 'rate')->first([])) !== []
-            && !empty($cnt = current($entry))
-        ) {
-            $rateManager = \Aimeos\MShop::create($context, $domain === 'product' ? 'index' : $domain);
-            $rateManager->rate($item->getRefId(), key($entry) / $cnt, $cnt);
-
-            $context->cache()->deleteByTags([$domain, $domain . '-' . $item->getRefId()]);
+        $filter = $this->manager->filter(true)->add(['review.refid' => $item->get_ref_id(), 'review.domain' => $domain]);
+        if ($status > 0 && ($entry = $this->manager->aggregate($filter, 'review.refid', 'review.rating', 'rate')->first([])) !== [] && !empty($cnt = current($entry))) {
+            $rate_manager = \Aimeos\M_Shop::create($context, $domain === 'product' ? 'index' : $domain);
+            $rate_manager->rate($item->get_ref_id(), key($entry) / $cnt, $cnt);
+            $context->cache()->delete_by_tags([$domain, $domain . '-' . $item->get_ref_id()]);
         }
-
         return $item;
     }
-
     /**
      * Returns the reviews filtered by the previously assigned conditions
      *
@@ -381,16 +320,12 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
     {
         $filter = clone $this->filter;
         $cond = $filter->is('review.status', '>', 0);
-
         $maxsize = $this->context()->config()->get('controller/frontend/common/max-size', 500);
-        $filter->slice($filter->getOffset(), min($filter->getLimit(), $maxsize));
-
-        $filter->setSortations($this->getSortations());
-        $filter->add($filter->and(array_merge($this->getConditions(), [$cond])));
-
+        $filter->slice($filter->get_offset(), min($filter->get_limit(), $maxsize));
+        $filter->set_sortations($this->get_sortations());
+        $filter->add($filter->and(array_merge($this->get_conditions(), [$cond])));
         return $this->manager->search($filter, [], $total);
     }
-
     /**
      * Sets the start value and the number of returned review items for slicing the list of found review items
      *
@@ -404,7 +339,6 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
         $this->filter->slice($start, $limit);
         return $this;
     }
-
     /**
      * Sets the sorting of the result list
      *
@@ -414,28 +348,24 @@ class Standard extends \Aimeos\Controller\Frontend\Base implements Iface, \Aimeo
      */
     public function sort(?string $key = null): Iface
     {
-        $list = $this->splitKeys($key);
-
+        $list = $this->split_keys($key);
         foreach ($list as $sortkey) {
-            $direction = ($sortkey[0] === '-' ? '-' : '+');
+            $direction = $sortkey[0] === '-' ? '-' : '+';
             $sortkey = ltrim($sortkey, '+-');
-
             match ($sortkey) {
-                'ctime' => $this->addExpression($this->filter->sort($direction, 'review.ctime')),
-                'rating' => $this->addExpression($this->filter->sort($direction, 'review.rating')),
-                default => $this->addExpression($this->filter->sort($direction, $sortkey)),
+                'ctime' => $this->add_expression($this->filter->sort($direction, 'review.ctime')),
+                'rating' => $this->add_expression($this->filter->sort($direction, 'review.rating')),
+                default => $this->add_expression($this->filter->sort($direction, $sortkey)),
             };
         }
-
         return $this;
     }
-
     /**
      * Returns the manager used by the controller
      *
      * @return \Aimeos\MShop\Common\Manager\Iface Manager object
      */
-    protected function getManager(): \Aimeos\MShop\Common\Manager\Iface
+    protected function get_manager(): \Aimeos\M_Shop\Common\Manager\Iface
     {
         return $this->manager;
     }
